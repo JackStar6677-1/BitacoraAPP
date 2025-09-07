@@ -2,300 +2,690 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administración - Bitácora de Sala de Computación</title>
-    <link rel="icon" href="{{ url_for('static', filename='imagenes/logo.jpg') }}" type="image/jpeg">
+    <link rel="icon" href="{{ url_for('static', filename='imagenes/logo2.ico') }}" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --success-gradient: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+            --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --danger-gradient: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            --dark-gradient: linear-gradient(135deg, #2c2a63 0%, #1a1a3a 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-light: #ffffff;
+            --text-dark: #2c2a63;
+            --shadow-soft: 0 8px 32px rgba(31, 38, 135, 0.37);
+            --shadow-strong: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background: linear-gradient(135deg, #2c2a63 0%, #1a1a3a 100%);
-            color: white;
+            font-family: 'Poppins', sans-serif;
+            background: var(--dark-gradient);
             min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            position: relative;
         }
 
+        /* Navbar flotante */
         .navbar {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 0 0 25px 25px;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            animation: slideDown 0.8s ease-out;
         }
 
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .navbar-brand {
+            color: var(--text-light) !important;
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-brand img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            padding: 5px;
+        }
+
+        .nav-link {
+            color: var(--text-light) !important;
+            font-weight: 500;
+            padding: 10px 20px !important;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-gradient);
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+
+        .nav-link:hover::before {
+            left: 0;
+        }
+
+        .nav-link:hover {
+            color: var(--text-light) !important;
+            transform: translateY(-2px);
+        }
+
+        /* Contenedor principal */
         .main-container {
-            background: rgba(255, 255, 255, 0.95);
-            color: #2c2a63;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            margin: 20px;
-            padding: 30px;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
         }
 
-        .table {
-            background: white;
+        /* Card principal */
+        .admin-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: var(--shadow-strong);
+            position: relative;
+            overflow: hidden;
+            animation: slideInUp 0.8s ease-out;
         }
 
-        .table th {
-            background-color: #2c2a63;
-            color: white;
-            border: none;
+        .admin-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+            border-radius: 30px 30px 0 0;
         }
 
-        .table td {
-            vertical-align: middle;
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .badge {
-            font-size: 0.8rem;
+        /* Título */
+        .admin-title {
+            color: var(--text-light);
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 30px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInDown 0.8s ease-out 0.2s both;
         }
 
-        .btn-primary {
-            background-color: #2c2a63;
-            border-color: #2c2a63;
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .btn-primary:hover {
-            background-color: #241f52;
-            border-color: #241f52;
+        /* Estadísticas */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
         }
 
-        .btn-danger {
-            background: linear-gradient(45deg, #dc3545, #c82333);
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--accent-gradient);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Controles de eliminación */
+        .delete-controls {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn-control {
             border: none;
             border-radius: 25px;
-            padding: 10px 25px;
+            padding: 12px 25px;
             font-weight: 600;
             transition: all 0.3s ease;
-        }
-
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(220, 53, 69, 0.3);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .btn-warning {
-            background: linear-gradient(45deg, #ffc107, #e0a800);
-            border: none;
-            border-radius: 25px;
-            padding: 10px 25px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .btn-warning:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(255, 193, 7, 0.3);
+            background: var(--warning-gradient);
+            color: var(--text-light);
         }
 
         .btn-secondary {
-            background: linear-gradient(45deg, #6c757d, #5a6268);
-            border: none;
-            border-radius: 25px;
-            padding: 10px 25px;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            background: var(--glass-bg);
+            color: var(--text-light);
+            border: 1px solid var(--glass-border);
         }
 
-        .btn-secondary:hover {
+        .btn-danger {
+            background: var(--danger-gradient);
+            color: var(--text-light);
+        }
+
+        .btn-control:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(108, 117, 125, 0.3);
+            box-shadow: var(--shadow-soft);
         }
 
+        .btn-control:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Tabla */
+        .table-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease-out 0.8s both;
+        }
+
+        .table {
+            margin: 0;
+            color: var(--text-light);
+        }
+
+        .table thead th {
+            background: var(--primary-gradient);
+            border: none;
+            color: var(--text-light);
+            font-weight: 600;
+            padding: 20px 15px;
+            text-align: center;
+            position: relative;
+        }
+
+        .table tbody tr {
+            transition: all 0.3s ease;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .table tbody tr:hover {
+            background: var(--glass-bg);
+            transform: scale(1.01);
+        }
+
+        .table tbody td {
+            padding: 15px;
+            vertical-align: middle;
+            border: none;
+        }
+
+        /* Checkboxes */
         .registro-checkbox {
-            transform: scale(1.2);
+            transform: scale(1.3);
             cursor: pointer;
+            accent-color: var(--accent-gradient);
         }
 
-        .btn-sm {
-            padding: 5px 10px;
-            font-size: 0.875rem;
+        /* Badges */
+        .badge {
+            font-size: 0.8rem;
+            padding: 8px 12px;
             border-radius: 15px;
+            font-weight: 500;
         }
 
-        .stats-card {
-            background: linear-gradient(135deg, #2c2a63, #241f52);
-            color: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
+        .badge.bg-secondary {
+            background: var(--glass-bg) !important;
+            color: var(--text-light);
+            border: 1px solid var(--glass-border);
         }
 
-        .logo-corner {
+        .badge.bg-primary {
+            background: var(--primary-gradient) !important;
+            color: var(--text-light);
+        }
+
+        /* Botones de acción */
+        .btn-action {
+            border: none;
+            border-radius: 15px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-outline-danger {
+            background: var(--glass-bg);
+            color: #ff416c;
+            border: 1px solid #ff416c;
+        }
+
+        .btn-outline-danger:hover {
+            background: var(--danger-gradient);
+            color: var(--text-light);
+            transform: translateY(-2px);
+        }
+
+        /* Texto truncado */
+        .text-truncate-custom {
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            cursor: help;
+        }
+
+        /* Efectos de fondo */
+        .bg-shapes {
             position: fixed;
-            top: 15px;
-            left: 15px;
-            width: 60px;
-            height: auto;
-            z-index: 1050;
-            filter: drop-shadow(0 0 2px rgba(0,0,0,0.6));
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .shape {
+            position: absolute;
+            background: var(--glass-bg);
+            border-radius: 50%;
+            animation: float 10s ease-in-out infinite;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+        }
+
+        .shape:nth-child(1) {
+            width: 120px;
+            height: 120px;
+            top: 15%;
+            left: 8%;
+            animation-delay: 0s;
+        }
+
+        .shape:nth-child(2) {
+            width: 180px;
+            height: 180px;
+            top: 60%;
+            right: 8%;
+            animation-delay: 4s;
+        }
+
+        .shape:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            top: 80%;
+            left: 15%;
+            animation-delay: 8s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-40px) rotate(180deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .admin-card {
+                padding: 25px;
+                margin: 10px;
+            }
+            
+            .admin-title {
+                font-size: 2rem;
+            }
+            
+            .stats-container {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+            
+            .control-buttons {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .table-container {
+                overflow-x: auto;
+            }
+        }
+
+        /* Animaciones de entrada */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Efectos de hover en el card */
+        .admin-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Contador de seleccionados */
+        #selectedCount {
+            background: var(--danger-gradient);
+            color: var(--text-light);
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
-    <!-- Logo en esquina -->
-    <img src="{{ url_for('static', filename='imagenes/logo.jpg') }}" alt="Logo Colegio" class="logo-corner" />
+    <!-- Formas de fondo -->
+    <div class="bg-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg">
-        <div class="container-fluid">
-            <a class="navbar-brand text-white" href="{{ url_for('formulario') }}">
-                <i class="fas fa-clipboard-list"></i> Bitácora de Sala
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('formulario') }}">
+                <img src="{{ url_for('static', filename='imagenes/logo.jpg') }}" alt="Logo">
+                Bitácora Digital
             </a>
-            <div class="navbar-nav ms-auto">
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user"></i> {{ correo }}
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{ url_for('formulario') }}"><i class="fas fa-plus"></i> Nuevo Registro</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('buscar') }}"><i class="fas fa-search"></i> Buscar</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
-                    </ul>
-                </div>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('formulario') }}">
+                            <i class="fas fa-plus-circle"></i> Nuevo Registro
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('admin') }}">
+                            <i class="fas fa-list"></i> Ver Registros
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('buscar') }}">
+                            <i class="fas fa-search"></i> Buscar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('correos') }}">
+                            <i class="fas fa-envelope"></i> Correos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>
 
-    <div class="container-fluid">
-        <div class="main-container">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1><i class="fas fa-list"></i> Todos los Registros</h1>
-                <div>
-                    <a href="{{ url_for('formulario') }}" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Nuevo Registro
-                    </a>
-                    <a href="{{ url_for('buscar') }}" class="btn btn-outline-primary">
-                        <i class="fas fa-search"></i> Buscar
-                    </a>
-                    <a href="{{ url_for('crear_ejemplos') }}" class="btn btn-success" 
-                       onclick="return confirm('¿Crear datos de ejemplo para agosto 2024? Esto agregará 20 registros de ejemplo.')">
-                        <i class="fas fa-database"></i> Crear Ejemplos
-                    </a>
-                    <a href="{{ url_for('enviar_correo_prueba') }}" class="btn btn-info" 
-                       onclick="return confirm('¿Enviar correo de prueba a pablo.elias.miranda.292003@gmail.com?')">
-                        <i class="fas fa-envelope"></i> Correo de Prueba
-                    </a>
-                </div>
-            </div>
+    <!-- Contenedor principal -->
+    <div class="main-container">
+        <div class="container">
+            <!-- Card principal -->
+            <div class="admin-card">
+                <h1 class="admin-title">
+                    <i class="fas fa-chart-line"></i>
+                    Panel de Administración
+                </h1>
 
-            <!-- Estadísticas -->
-            <div class="row mb-4">
-                <div class="col-md-3">
-                    <div class="stats-card text-center">
-                        <h3><i class="fas fa-calendar-day"></i></h3>
-                        <h4>{{ registros|length }}</h4>
-                        <p class="mb-0">Total Registros</p>
+                <!-- Estadísticas -->
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="stat-number">{{ registros|length }}</div>
+                        <div class="stat-label">Total Registros</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-number">{{ registros|map(attribute=2)|unique|list|length }}</div>
+                        <div class="stat-label">Cursos Únicos</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="stat-number">{{ registros|map(attribute=3)|unique|list|length }}</div>
+                        <div class="stat-label">Asignaturas</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="stat-number">{{ registros|map(attribute=7)|unique|list|length }}</div>
+                        <div class="stat-label">Usuarios</div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="stats-card text-center">
-                        <h3><i class="fas fa-users"></i></h3>
-                        <h4>{{ registros|map(attribute=7)|unique|list|length }}</h4>
-                        <p class="mb-0">Usuarios Activos</p>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stats-card text-center">
-                        <h3><i class="fas fa-graduation-cap"></i></h3>
-                        <h4>{{ registros|map(attribute=2)|unique|list|length }}</h4>
-                        <p class="mb-0">Cursos Diferentes</p>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stats-card text-center">
-                        <h3><i class="fas fa-book"></i></h3>
-                        <h4>{{ registros|map(attribute=3)|unique|list|length }}</h4>
-                        <p class="mb-0">Asignaturas</p>
-                    </div>
-                </div>
-            </div>
 
-            {% if registros %}
-            <div class="mb-3">
-                <div class="row">
-                    <div class="col-md-6">
-                        <button type="button" class="btn btn-warning" onclick="selectAll()">
+                {% if registros %}
+                <!-- Controles de eliminación -->
+                <div class="delete-controls">
+                    <div class="control-buttons">
+                        <button type="button" class="btn-control btn-warning" onclick="selectAll()">
                             <i class="fas fa-check-square"></i> Seleccionar Todos
                         </button>
-                        <button type="button" class="btn btn-secondary" onclick="deselectAll()">
+                        <button type="button" class="btn-control btn-secondary" onclick="deselectAll()">
                             <i class="fas fa-square"></i> Deseleccionar Todos
                         </button>
-                    </div>
-                    <div class="col-md-6 text-end">
-                        <button type="button" class="btn btn-danger" onclick="deleteSelected()" id="deleteBtn" disabled>
+                        <button type="button" class="btn-control btn-danger" onclick="deleteSelected()" id="deleteBtn" disabled>
                             <i class="fas fa-trash"></i> Eliminar Seleccionados (<span id="selectedCount">0</span>)
                         </button>
                     </div>
                 </div>
+
+                <!-- Tabla de registros -->
+                <div class="table-container">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()">
+                                </th>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Curso</th>
+                                <th>Asignatura</th>
+                                <th>Objetivo</th>
+                                <th>Actividad</th>
+                                <th>Observaciones</th>
+                                <th>Usuario</th>
+                                <th>Fecha Creación</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for registro in registros %}
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="registro-checkbox" value="{{ registro[0] }}" onchange="updateDeleteButton()">
+                                </td>
+                                <td><span class="badge bg-secondary">{{ registro[0] }}</span></td>
+                                <td>{{ registro[1] }}</td>
+                                <td><span class="badge bg-primary">{{ registro[2] }}</span></td>
+                                <td>{{ registro[3] }}</td>
+                                <td>
+                                    <div class="text-truncate-custom" title="{{ registro[4] }}">
+                                        {{ registro[4] }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="text-truncate-custom" title="{{ registro[5] }}">
+                                        {{ registro[5] }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="text-truncate-custom" title="{{ registro[6] }}">
+                                        {{ registro[6] }}
+                                    </div>
+                                </td>
+                                <td><small>{{ registro[7] }}</small></td>
+                                <td><small>{{ registro[9] }}</small></td>
+                                <td>
+                                    <button type="button" class="btn-action btn-outline-danger" onclick="deleteSingle({{ registro[0] }})" title="Eliminar registro">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <!-- Mensaje cuando no hay registros -->
+                <div class="text-center py-5">
+                    <div class="stat-icon" style="font-size: 4rem; margin-bottom: 20px;">
+                        <i class="fas fa-inbox"></i>
+                    </div>
+                    <h3 style="color: var(--text-light); margin-bottom: 15px;">No hay registros</h3>
+                    <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 30px;">
+                        Aún no se han creado registros. ¡Crea el primero!
+                    </p>
+                    <a href="{{ url_for('formulario') }}" class="btn-control" style="background: var(--success-gradient); color: var(--text-light); text-decoration: none;">
+                        <i class="fas fa-plus"></i> Crear Primer Registro
+                    </a>
+                </div>
+                {% endif %}
             </div>
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th>
-                                <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()">
-                            </th>
-                            <th>ID</th>
-                            <th>Fecha</th>
-                            <th>Curso</th>
-                            <th>Asignatura</th>
-                            <th>Objetivo</th>
-                            <th>Actividad</th>
-                            <th>Observaciones</th>
-                            <th>Usuario</th>
-                            <th>Fecha Creación</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for registro in registros %}
-                        <tr>
-                            <td>
-                                <input type="checkbox" class="registro-checkbox" value="{{ registro[0] }}" onchange="updateDeleteButton()">
-                            </td>
-                            <td><span class="badge bg-secondary">{{ registro[0] }}</span></td>
-                            <td>{{ registro[1] }}</td>
-                            <td><span class="badge bg-primary">{{ registro[2] }}</span></td>
-                            <td>{{ registro[3] }}</td>
-                            <td>
-                                <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" 
-                                     title="{{ registro[4] }}">
-                                    {{ registro[4] }}
-                                </div>
-                            </td>
-                            <td>
-                                <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" 
-                                     title="{{ registro[5] }}">
-                                    {{ registro[5] }}
-                                </div>
-                            </td>
-                            <td>
-                                <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" 
-                                     title="{{ registro[6] }}">
-                                    {{ registro[6] }}
-                                </div>
-                            </td>
-                            <td><small>{{ registro[7] }}</small></td>
-                            <td><small>{{ registro[9] }}</small></td>
-                            <td>
-                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteSingle({{ registro[0] }})" title="Eliminar registro">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% else %}
-            <div class="text-center py-5">
-                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                <h3 class="text-muted">No hay registros</h3>
-                <p class="text-muted">Aún no se han creado registros en la bitácora.</p>
-                <a href="{{ url_for('formulario') }}" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Crear Primer Registro
-                </a>
-            </div>
-            {% endif %}
         </div>
     </div>
 
@@ -308,16 +698,20 @@
             const deleteBtn = document.getElementById('deleteBtn');
             const selectedCount = document.getElementById('selectedCount');
             
-            selectedCount.textContent = checkboxes.length;
+            if (selectedCount) {
+                selectedCount.textContent = checkboxes.length;
+            }
             
-            if (checkboxes.length > 0) {
-                deleteBtn.disabled = false;
-                deleteBtn.classList.remove('btn-secondary');
-                deleteBtn.classList.add('btn-danger');
-            } else {
-                deleteBtn.disabled = true;
-                deleteBtn.classList.remove('btn-danger');
-                deleteBtn.classList.add('btn-secondary');
+            if (deleteBtn) {
+                if (checkboxes.length > 0) {
+                    deleteBtn.disabled = false;
+                    deleteBtn.classList.remove('btn-secondary');
+                    deleteBtn.classList.add('btn-danger');
+                } else {
+                    deleteBtn.disabled = true;
+                    deleteBtn.classList.remove('btn-danger');
+                    deleteBtn.classList.add('btn-secondary');
+                }
             }
         }
 
@@ -329,7 +723,9 @@
             checkboxes.forEach(checkbox => {
                 checkbox.checked = true;
             });
-            selectAllCheckbox.checked = true;
+            if (selectAllCheckbox) {
+                selectAllCheckbox.checked = true;
+            }
             updateDeleteButton();
         }
 
@@ -341,7 +737,9 @@
             checkboxes.forEach(checkbox => {
                 checkbox.checked = false;
             });
-            selectAllCheckbox.checked = false;
+            if (selectAllCheckbox) {
+                selectAllCheckbox.checked = false;
+            }
             updateDeleteButton();
         }
 
@@ -408,9 +806,36 @@
             }
         }
 
+        // Efecto de parallax en las formas de fondo
+        document.addEventListener('mousemove', function(e) {
+            const shapes = document.querySelectorAll('.shape');
+            const mouseX = e.clientX / window.innerWidth;
+            const mouseY = e.clientY / window.innerHeight;
+
+            shapes.forEach((shape, index) => {
+                const speed = (index + 1) * 0.2;
+                const x = (mouseX - 0.5) * speed * 40;
+                const y = (mouseY - 0.5) * speed * 40;
+                shape.style.transform = `translate(${x}px, ${y}px)`;
+            });
+        });
+
         // Inicializar el estado del botón al cargar la página
         document.addEventListener('DOMContentLoaded', function() {
             updateDeleteButton();
+            
+            // Animación de entrada para las filas de la tabla
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach((row, index) => {
+                row.style.opacity = '0';
+                row.style.transform = 'translateX(-20px)';
+                
+                setTimeout(() => {
+                    row.style.transition = 'all 0.5s ease';
+                    row.style.opacity = '1';
+                    row.style.transform = 'translateX(0)';
+                }, index * 100);
+            });
         });
     </script>
 </body>
