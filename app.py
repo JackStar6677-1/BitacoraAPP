@@ -102,6 +102,16 @@ def init_db():
         )
     ''')
     
+    # Crear tabla de usuarios si no existe
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS usuarios (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            correo TEXT UNIQUE NOT NULL,
+            nombre TEXT NOT NULL,
+            fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    
     # Verificar si las columnas necesarias existen, si no, agregarlas
     cursor.execute("PRAGMA table_info(bitacora)")
     columns = [column[1] for column in cursor.fetchall()]
