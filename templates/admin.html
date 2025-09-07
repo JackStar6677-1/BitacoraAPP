@@ -286,6 +286,11 @@
             color: var(--text-light);
         }
 
+        .btn-info {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+            color: var(--text-light);
+        }
+
         .btn-control:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-soft);
@@ -613,6 +618,9 @@
                         <button type="button" class="btn-control btn-danger" onclick="deleteSelected()" id="deleteBtn" disabled>
                             <i class="fas fa-trash"></i> Eliminar Seleccionados (<span id="selectedCount">0</span>)
                         </button>
+                        <button type="button" class="btn-control btn-info" onclick="crearRegistrosPrueba()">
+                            <i class="fas fa-plus-circle"></i> Crear Registros de Prueba
+                        </button>
                     </div>
                 </div>
 
@@ -803,6 +811,19 @@
                 input.name = 'registro_ids';
                 input.value = id;
                 form.appendChild(input);
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        // Función para crear registros de prueba
+        function crearRegistrosPrueba() {
+            if (confirm('¿Estás seguro de que quieres crear registros de prueba para el mes de agosto?')) {
+                // Crear formulario para enviar la solicitud
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/crear_ejemplos';
                 
                 document.body.appendChild(form);
                 form.submit();

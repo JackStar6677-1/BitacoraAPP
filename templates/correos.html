@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Gestionar Correos - Bitácora de Sala de Computación</title>
+    <title>Colegio Polivalente San Cristóbal Apóstol - Gestión de Correos</title>
     <link rel="icon" href="{{ url_for('static', filename='imagenes/logo.jpg') }}" type="image/jpeg">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -97,7 +97,7 @@
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
             <a class="navbar-brand text-white" href="{{ url_for('formulario') }}">
-                <i class="fas fa-clipboard-list"></i> Bitácora de Sala
+                <i class="fas fa-clipboard-list"></i> Colegio SCA
             </a>
             <div class="navbar-nav ms-auto">
                 <div class="nav-item dropdown">
@@ -120,6 +120,9 @@
         <div class="main-container">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1><i class="fas fa-envelope"></i> Gestionar Correos Predeterminados</h1>
+                <p style="color: rgba(255, 255, 255, 0.8); text-align: center; margin-bottom: 30px; font-size: 1.1rem;">
+                    Colegio Polivalente San Cristóbal Apóstol
+                </p>
                 <div>
                     <a href="{{ url_for('formulario') }}" class="btn btn-primary">
                         <i class="fas fa-arrow-left"></i> Volver al Formulario
