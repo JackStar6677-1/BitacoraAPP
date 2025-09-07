@@ -661,7 +661,7 @@
                                         {{ registro[6] }}
                                     </div>
                                 </td>
-                                <td><small>{{ registro[7] }}</small></td>
+                                <td><small>{{ registro[10] if registro[10] else registro[7] }}</small></td>
                                 <td><small>{{ registro[9] }}</small></td>
                                 <td>
                                     <button type="button" class="btn-action btn-outline-danger" onclick="deleteSingle({{ registro[0] }})" title="Eliminar registro">

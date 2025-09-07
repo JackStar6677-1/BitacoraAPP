@@ -130,9 +130,21 @@ def save_to_db(datos):
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
     
+    # Obtener o crear usuario_id basado en el correo
+    correo = datos.get('correo')
+    cursor.execute('SELECT id FROM usuarios WHERE correo = ?', (correo,))
+    usuario = cursor.fetchone()
+    
+    if usuario:
+        usuario_id = usuario[0]
+    else:
+        # Crear nuevo usuario si no existe
+        cursor.execute('INSERT INTO usuarios (correo, nombre) VALUES (?, ?)', (correo, correo))
+        usuario_id = cursor.lastrowid
+    
     cursor.execute('''
-        INSERT INTO bitacora (fecha, curso, asignatura, objetivo, recursos, observaciones, correo, destinatario)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO bitacora (fecha, curso, asignatura, objetivo, recursos, observaciones, correo, destinatario, usuario_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     ''', (
         datos.get('fecha'),
         datos.get('curso'),
@@ -141,7 +153,8 @@ def save_to_db(datos):
         datos.get('recursos'),
         datos.get('observaciones'),
         datos.get('correo'),
-        datos.get('destinatario')
+        datos.get('destinatario'),
+        usuario_id
     ))
     
     conn.commit()
@@ -153,7 +166,12 @@ def get_all_records():
     cursor = conn.cursor()
     
     cursor.execute('''
-        SELECT * FROM bitacora ORDER BY fecha_creacion DESC
+        SELECT b.id, b.fecha, b.curso, b.asignatura, b.objetivo, b.recursos, 
+               b.observaciones, b.correo, b.destinatario, b.fecha_creacion,
+               COALESCE(u.nombre, b.correo) as nombre_usuario
+        FROM bitacora b
+        LEFT JOIN usuarios u ON b.usuario_id = u.id
+        ORDER BY b.fecha_creacion DESC
     ''')
     
     records = cursor.fetchall()
@@ -166,9 +184,13 @@ def get_records_by_date_range(fecha_inicio, fecha_fin):
     cursor = conn.cursor()
     
     cursor.execute('''
-        SELECT * FROM bitacora 
-        WHERE fecha BETWEEN ? AND ? 
-        ORDER BY fecha_creacion DESC
+        SELECT b.id, b.fecha, b.curso, b.asignatura, b.objetivo, b.recursos, 
+               b.observaciones, b.correo, b.destinatario, b.fecha_creacion,
+               COALESCE(u.nombre, b.correo) as nombre_usuario
+        FROM bitacora b
+        LEFT JOIN usuarios u ON b.usuario_id = u.id
+        WHERE b.fecha BETWEEN ? AND ? 
+        ORDER BY b.fecha_creacion DESC
     ''', (fecha_inicio, fecha_fin))
     
     records = cursor.fetchall()
