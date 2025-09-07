@@ -133,8 +133,7 @@ REM Crear script de inicio silencioso
 echo @echo off > "%DOCS_DIR%\iniciar_bitacora.bat"
 echo cd /d "%DOCS_DIR%" >> "%DOCS_DIR%\iniciar_bitacora.bat"
 echo call venv\Scripts\activate.bat >> "%DOCS_DIR%\iniciar_bitacora.bat"
-echo start /min python app.py >> "%DOCS_DIR%\iniciar_bitacora.bat"
-echo exit >> "%DOCS_DIR%\iniciar_bitacora.bat"
+echo python app.py >> "%DOCS_DIR%\iniciar_bitacora.bat"
 
 REM Crear acceso directo usando PowerShell
 powershell -Command "$WshShell = New-Object -comObject WScript.Shell; $Shortcut = $WshShell.CreateShortcut('%SHORTCUT_PATH%'); $Shortcut.TargetPath = '%DOCS_DIR%\iniciar_bitacora.bat'; $Shortcut.WorkingDirectory = '%DOCS_DIR%'; $Shortcut.IconLocation = '%ICON_PATH%'; $Shortcut.Description = 'Bitacora de Sala de Computacion - Aplicacion Web'; $Shortcut.Save()"
@@ -169,21 +168,5 @@ echo ✅ Navegador se abrira automaticamente
 echo ✅ Presiona Ctrl+C para detener el servidor
 echo.
 
-REM Iniciar aplicacion en segundo plano
-start /min python app.py
-
-REM Esperar un momento y abrir navegador
-timeout /t 3 /nobreak >nul
-start http://localhost:5000
-
-echo.
-echo ✅ Aplicacion iniciada correctamente
-echo ✅ Navegador abierto en: http://localhost:5000
-echo.
-echo Para detener la aplicacion, cierra esta ventana o presiona Ctrl+C
-echo.
-
-REM Mantener ventana abierta pero minimizada
-:loop
-timeout /t 30 /nobreak >nul
-goto loop
+REM Iniciar aplicacion
+python app.py
