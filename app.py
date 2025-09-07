@@ -15,7 +15,7 @@ def load_config():
     """Carga la configuración desde archivo o usa valores predeterminados"""
     try:
         # Intentar cargar desde archivo
-with open("config.json", "r", encoding="utf-8") as config_file:
+        with open("config.json", "r", encoding="utf-8") as config_file:
             return json.load(config_file)
     except FileNotFoundError:
         # Si no existe el archivo, usar configuración predeterminada
@@ -538,9 +538,10 @@ def crear_pdf(datos, filename):
 
 @app.route("/")
 def index():
+    """Página principal - muestra login si no está autenticado"""
     if not google.authorized:
-        app.logger.info("Usuario no autorizado. Redirigiendo a login de Google.")
-        return redirect(url_for("google.login"))
+        app.logger.info("Usuario no autorizado. Mostrando página de login.")
+        return render_template("login.html")
     try:
         resp = google.get("/oauth2/v2/userinfo")
         if not resp.ok:
@@ -858,9 +859,29 @@ Sistema Bitácora de Sala de Computación
 
 @app.route("/logout")
 def logout():
+    """Cierra sesión y limpia todas las cookies y datos de sesión"""
+    # Limpiar sesión de Flask
     session.clear()
-    app.logger.info("Sesión cerrada.")
-    return redirect(url_for("index"))
+    
+    # Limpiar sesión de Google OAuth
+    if google.authorized:
+        try:
+            # Revocar token de Google
+            google.post("https://oauth2.googleapis.com/revoke", 
+                       data={"token": google.token.get("access_token")})
+        except Exception as e:
+            app.logger.warning(f"Error al revocar token de Google: {e}")
+    
+    app.logger.info("Sesión cerrada completamente.")
+    
+    # Redirigir a login con parámetros para limpiar cookies
+    response = redirect(url_for("index"))
+    
+    # Limpiar cookies del navegador
+    response.set_cookie('session', '', expires=0)
+    response.set_cookie('google_oauth_token', '', expires=0)
+    
+    return response
 
 
 if __name__ == "__main__":

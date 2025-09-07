@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bitácora de Sala de Computación - Acceso</title>
+    <title>Colegio Polivalente San Cristóbal Apóstol - Bitácora Digital</title>
     <link rel="icon" href="{{ url_for('static', filename='imagenes/logo2.ico') }}" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -396,14 +396,23 @@
             </div>
 
             <!-- Título -->
-            <h1 class="title">Bitácora Digital</h1>
-            <p class="subtitle">Sala de Computación</p>
+            <h1 class="title">Colegio Polivalente</h1>
+            <h2 class="title" style="font-size: 1.8rem; margin-top: -10px;">San Cristóbal Apóstol</h2>
+            <p class="subtitle">Bitácora Digital - Sala de Computación</p>
 
             <!-- Botón de Google -->
             <a href="{{ url_for('google.login') }}" class="google-btn">
                 <i class="fab fa-google google-icon"></i>
                 <span>Iniciar Sesión con Google</span>
             </a>
+
+            <!-- Botón para limpiar sesión -->
+            <div style="margin-top: 20px;">
+                <button type="button" class="google-btn" onclick="limpiarSesion()" style="background: var(--danger-gradient); font-size: 0.9rem; padding: 10px 20px;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Limpiar Sesión Anterior</span>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -479,6 +488,24 @@
             const originalText = title.textContent;
             typeWriter(title, originalText, 150);
         });
+
+        // Función para limpiar sesión
+        function limpiarSesion() {
+            // Limpiar cookies del navegador
+            document.cookie = "session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            document.cookie = "google_oauth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            document.cookie = "flask-session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            
+            // Limpiar localStorage y sessionStorage
+            localStorage.clear();
+            sessionStorage.clear();
+            
+            // Mostrar mensaje de confirmación
+            alert('Sesión limpiada correctamente. Ahora puedes iniciar sesión con una cuenta diferente.');
+            
+            // Recargar la página
+            window.location.reload();
+        }
     </script>
 </body>
 </html>
