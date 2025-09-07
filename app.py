@@ -686,6 +686,49 @@ def admin():
         flash("Error al cargar los registros.")
         return redirect(url_for("formulario"))
 
+@app.route("/eliminar_registros", methods=["POST"])
+def eliminar_registros():
+    """Elimina uno o múltiples registros de la base de datos"""
+    if 'user_email' not in session:
+        app.logger.warning("Intento de acceso sin sesión válida")
+        return redirect(url_for("index"))
+    
+    try:
+        # Obtener los IDs de los registros a eliminar
+        registro_ids = request.form.getlist('registro_ids')
+        
+        if not registro_ids:
+            flash("No se seleccionaron registros para eliminar.", "warning")
+            return redirect(url_for("admin"))
+        
+        # Conectar a la base de datos
+        conn = sqlite3.connect(DATABASE)
+        cursor = conn.cursor()
+        
+        # Eliminar cada registro
+        eliminados = 0
+        for registro_id in registro_ids:
+            cursor.execute("DELETE FROM bitacora WHERE id = ?", (registro_id,))
+            if cursor.rowcount > 0:
+                eliminados += 1
+        
+        conn.commit()
+        conn.close()
+        
+        # Mensaje de confirmación
+        if eliminados == 1:
+            flash(f"✅ Se eliminó {eliminados} registro correctamente.", "success")
+        else:
+            flash(f"✅ Se eliminaron {eliminados} registros correctamente.", "success")
+        
+        app.logger.info(f"Usuario {session['user_email']} eliminó {eliminados} registros: {registro_ids}")
+        
+    except Exception as e:
+        log_error_detallado(e)
+        flash("❌ Error al eliminar los registros.", "error")
+    
+    return redirect(url_for("admin"))
+
 @app.route("/buscar", methods=["GET", "POST"])
 def buscar():
     """Página para buscar registros por rango de fechas"""
