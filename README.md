@@ -16,6 +16,10 @@ Esta aplicación permite a los profesores y personal educativo registrar el uso 
 - **🎨 Interfaz moderna**: Diseño responsive con Bootstrap 5
 - **⚙️ Configuración incluida**: Sin necesidad de configuración adicional
 - **🚀 Instalación automática**: Un solo script hace todo
+- **🖥️ Acceso directo profesional**: Icono personalizado en el escritorio
+- **📁 Migración automática**: Se instala en Documentos del usuario
+- **🔇 Ejecución silenciosa**: Sin ventanas de consola visibles
+- **🌐 Inicio automático**: Navegador se abre automáticamente
 
 ## 🛠️ Tecnologías Utilizadas
 
@@ -61,8 +65,27 @@ Esta aplicación permite a los profesores y personal educativo registrar el uso 
 **Para Windows:**
 1. Descargar o clonar el proyecto
 2. Ejecutar `start_bitacora.bat` como administrador
-3. La aplicación se creará y ejecutará automáticamente
-4. ¡Listo! No se requiere configuración adicional
+3. La aplicación se instalará automáticamente en Documentos
+4. Se creará un acceso directo en el escritorio con icono personalizado
+5. ¡Listo! No se requiere configuración adicional
+
+### 🎯 Características de la Instalación
+
+**✅ Migración Automática:**
+- El proyecto se copia automáticamente a `Documentos\BitacoraAPP`
+- Organización profesional en la ubicación correcta
+- No más archivos en Descargas o Escritorio
+
+**✅ Acceso Directo Profesional:**
+- Icono personalizado usando `static\imagenes\logo2.ico`
+- Nombre descriptivo: "Bitácora de Sala de Computación"
+- Ejecución silenciosa sin ventanas de consola
+
+**✅ Experiencia de Usuario:**
+- Simula una aplicación nativa de Windows
+- Navegador se abre automáticamente
+- Sin ventanas de consola visibles al usuario
+- Funciona en cualquier PC sin configuración adicional
 
 ### 🌐 Aplicación Web
 
@@ -209,13 +232,14 @@ bitacora-app/
 ├── app.db               # Base de datos SQLite
 ├── requirements.txt     # Dependencias de Python
 ├── README.md           # Documentación
-├── start_bitacora.bat  # Script único de instalación y ejecución
+├── start_bitacora.bat  # Script de instalación y migración
+├── limpiar_archivos.bat # Script de limpieza de archivos temporales
 ├── static/             # Archivos estáticos
 │   ├── css/
 │   │   └── styles.css  # Estilos personalizados
 │   └── imagenes/
 │       ├── logo.jpg    # Logo de la aplicación
-│       └── logo2.ico   # Icono para ejecutables
+│       └── logo2.ico   # Icono para acceso directo
 ├── templates/          # Plantillas HTML
 │   ├── login.html      # Página de login
 │   ├── formulario.html # Formulario principal
@@ -223,6 +247,18 @@ bitacora-app/
 │   ├── buscar.html     # Página de búsqueda
 │   └── correos.html    # Gestión de correos
 └── venv/              # Entorno virtual
+```
+
+### 📂 Estructura en Documentos (Después de la Instalación)
+
+```
+Documentos/BitacoraAPP/
+├── app.py                 # Aplicación principal
+├── iniciar_bitacora.bat   # Script de inicio silencioso
+├── static/               # Recursos estáticos
+├── templates/            # Plantillas HTML
+├── venv/                # Entorno virtual
+└── app.db               # Base de datos SQLite
 ```
 
 ## 🔧 Uso de la Aplicación
