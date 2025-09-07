@@ -15,7 +15,7 @@ def load_config():
     """Carga la configuración desde archivo o usa valores predeterminados"""
     try:
         # Intentar cargar desde archivo
-        with open("config.json", "r", encoding="utf-8") as config_file:
+with open("config.json", "r", encoding="utf-8") as config_file:
             return json.load(config_file)
     except FileNotFoundError:
         # Si no existe el archivo, usar configuración predeterminada
