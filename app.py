@@ -828,7 +828,7 @@ def gestionar_correos():
     correos_predeterminados = get_default_emails()
     return render_template("correos.html", correos=correos_predeterminados, correo=session['user_email'])
 
-@app.route("/crear_ejemplos")
+@app.route("/crear_ejemplos", methods=['GET', 'POST'])
 def crear_ejemplos():
     """Crea datos de ejemplo para demostrar la aplicación"""
     if 'user_email' not in session:
