@@ -103,6 +103,7 @@ def init_db():
     ''')
     
     # Crear tabla de usuarios si no existe
+    print("Creando tabla usuarios...")
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS usuarios (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -111,6 +112,7 @@ def init_db():
             fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
+    print("✅ Tabla usuarios creada/verificada")
     
     # Verificar si las columnas necesarias existen, si no, agregarlas
     cursor.execute("PRAGMA table_info(bitacora)")
@@ -142,6 +144,7 @@ def save_to_db(datos):
     
     # Obtener o crear usuario_id basado en el correo
     correo = datos.get('correo')
+    print(f"Buscando usuario con correo: {correo}")
     cursor.execute('SELECT id FROM usuarios WHERE correo = ?', (correo,))
     usuario = cursor.fetchone()
     

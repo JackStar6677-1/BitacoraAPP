@@ -1,5 +1,5 @@
 @echo off
-title Bitacora de Sala de Computacion - Inicio Rapido
+title Bitacora de Sala de Computacion - Inicio Directo
 color 0A
 
 echo.
@@ -10,11 +10,12 @@ echo ========================================
 echo.
 
 REM Verificar Python
-echo [1/3] Verificando Python...
+echo [1/4] Verificando Python...
 python --version >nul 2>&1
 if errorlevel 1 (
-    echo ❌ Python no encontrado. Instala Python 3.8 o superior
+    echo ❌ Python no encontrado. Instalando Python...
     echo Descarga desde: https://www.python.org/downloads/
+    start https://www.python.org/downloads/
     pause
     exit /b 1
 )
@@ -22,7 +23,7 @@ echo ✅ Python encontrado
 
 REM Crear/activar entorno virtual
 echo.
-echo [2/3] Configurando entorno virtual...
+echo [2/4] Configurando entorno virtual...
 if not exist "venv" (
     echo Creando entorno virtual...
     python -m venv venv
@@ -47,8 +48,8 @@ echo ✅ Entorno virtual activado
 
 REM Instalar dependencias
 echo.
-echo [3/3] Instalando dependencias...
-echo Esto puede tomar unos minutos, por favor espera...
+echo [3/4] Instalando dependencias...
+echo Esto puede tomar unos minutos...
 
 python -m pip install --upgrade pip >nul 2>&1
 pip install flask flask-dance flask-mail reportlab python-docx requests werkzeug jinja2 markupsafe itsdangerous click blinker oauthlib requests-oauthlib certifi charset-normalizer idna urllib3 lxml pillow >nul 2>&1
@@ -64,9 +65,9 @@ if errorlevel 1 (
 )
 echo ✅ Dependencias instaladas
 
-REM Verificar archivos necesarios
+REM Verificar archivos
 echo.
-echo Verificando archivos de la aplicacion...
+echo [4/4] Verificando archivos...
 if not exist "app.py" (
     echo ❌ app.py no encontrado
     pause
