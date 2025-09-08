@@ -700,7 +700,7 @@ def formulario():
             if 'archivo_pdf' in locals() and os.path.exists(archivo_pdf):
                 os.remove(archivo_pdf)
 
-        flash("Formulario guardado y enviado correctamente")
+        flash("🎫 ¡TICKET CREADO EXITOSAMENTE! 🎫 - Formulario guardado y correo enviado correctamente", "success")
         return redirect(url_for("formulario"))
 
     correos_predeterminados = get_default_emails()
