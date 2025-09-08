@@ -929,7 +929,20 @@ if __name__ == "__main__":
     
     def open_browser():
         time.sleep(1.5)  # Esperar a que el servidor inicie
-        webbrowser.open('http://localhost:5000')
+        # Intentar abrir en modo incógnito para evitar sesiones anteriores
+        try:
+            import subprocess
+            import platform
+            
+            if platform.system() == "Windows":
+                # Chrome en modo incógnito
+                subprocess.Popen(['chrome', '--incognito', 'http://localhost:5000'], 
+                               shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            else:
+                webbrowser.open('http://localhost:5000')
+        except:
+            # Fallback a navegador normal si no se puede abrir en incógnito
+            webbrowser.open('http://localhost:5000')
     
     # Iniciar hilo para abrir navegador
     browser_thread = threading.Thread(target=open_browser)

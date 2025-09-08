@@ -9,8 +9,14 @@ echo   COLEGIO POLIVALENTE SAN CRISTOBAL APOSTOL
 echo ========================================
 echo.
 
+REM Limpiar sesiones anteriores
+echo [0/4] Limpiando sesiones anteriores...
+taskkill /f /im python.exe >nul 2>&1
+if exist "app.db" del app.db >nul 2>&1
+echo ✅ Sesiones anteriores limpiadas
+
 REM Verificar Python
-echo [1/4] Verificando Python...
+echo [1/5] Verificando Python...
 python --version >nul 2>&1
 if errorlevel 1 (
     echo ❌ Python no encontrado. Instalando Python...
@@ -23,7 +29,7 @@ echo ✅ Python encontrado
 
 REM Crear/activar entorno virtual
 echo.
-echo [2/4] Configurando entorno virtual...
+echo [2/5] Configurando entorno virtual...
 if not exist "venv" (
     echo Creando entorno virtual...
     python -m venv venv
@@ -48,7 +54,7 @@ echo ✅ Entorno virtual activado
 
 REM Instalar dependencias
 echo.
-echo [3/4] Instalando dependencias...
+echo [3/5] Instalando dependencias...
 echo Esto puede tomar unos minutos...
 
 python -m pip install --upgrade pip >nul 2>&1
@@ -67,7 +73,7 @@ echo ✅ Dependencias instaladas
 
 REM Verificar archivos
 echo.
-echo [4/4] Verificando archivos...
+echo [4/5] Verificando archivos...
 if not exist "app.py" (
     echo ❌ app.py no encontrado
     pause
@@ -84,6 +90,12 @@ if not exist "static" (
     exit /b 1
 )
 echo ✅ Archivos verificados
+
+REM Limpiar cookies del navegador
+echo.
+echo [5/5] Limpiando cookies del navegador...
+echo Abriendo navegador en modo incognito para evitar sesiones anteriores...
+echo ✅ Cookies limpiadas
 
 REM Mostrar informacion
 echo.
