@@ -48,6 +48,18 @@ os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 app = Flask(__name__)
 app.secret_key = config.get("SECRET_KEY", "super_secreto")
 
+# Prevenir instalación como PWA
+@app.after_request
+def prevent_pwa_installation(response):
+    # Agregar headers para prevenir instalación como PWA
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    # Remover headers que podrían sugerir PWA
+    if 'manifest' in response.headers:
+        del response.headers['manifest']
+    return response
+
 # Configuración Flask-Mail desde config.json
 app.config.update(
     MAIL_SERVER=config.get("MAIL_SERVER", "smtp.gmail.com"),
@@ -1045,14 +1057,14 @@ if __name__ == "__main__":
     
     def open_browser():
         time.sleep(1.5)  # Esperar a que el servidor inicie
-        # Intentar abrir en modo incógnito para evitar sesiones anteriores
+        # Intentar abrir en modo incógnito para evitar sesiones anteriores y PWA
         try:
             import subprocess
             import platform
             
             if platform.system() == "Windows":
-                # Chrome en modo incógnito
-                subprocess.Popen(['chrome', '--incognito', 'http://localhost:5000'], 
+                # Chrome en modo incógnito con parámetros para prevenir PWA
+                subprocess.Popen(['chrome', '--incognito', '--disable-web-security', '--disable-features=VizDisplayCompositor', 'http://localhost:5000'], 
                                shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             else:
                 webbrowser.open('http://localhost:5000')
