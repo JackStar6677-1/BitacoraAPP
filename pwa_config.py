@@ -5,7 +5,7 @@ Incluye configuración HTTPS y optimizaciones para PWA
 
 import os
 import ssl
-from flask import Flask, send_from_directory, jsonify
+from flask import Flask, send_from_directory, jsonify, request
 
 def configure_pwa(app):
     """Configura la aplicación Flask para PWA"""
@@ -20,41 +20,58 @@ def configure_pwa(app):
         response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
         
         # Headers para Service Worker
-        if request.endpoint and 'sw.js' in request.endpoint:
+        if hasattr(request, 'endpoint') and request.endpoint and 'sw.js' in str(request.endpoint):
             response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
             response.headers['Pragma'] = 'no-cache'
             response.headers['Expires'] = '0'
         
         return response
     
-    # Ruta para el Service Worker
-    @app.route('/sw.js')
-    def service_worker():
-        return send_from_directory('static', 'sw.js', mimetype='application/javascript')
+    # Solo agregar rutas si no existen
+    try:
+        # Ruta para el Service Worker
+        @app.route('/sw.js')
+        def service_worker():
+            return send_from_directory('static', 'sw.js', mimetype='application/javascript')
+    except AssertionError:
+        # La ruta ya existe, no hacer nada
+        pass
     
-    # Ruta para el manifest
-    @app.route('/manifest.json')
-    def manifest():
-        return send_from_directory('static', 'manifest.json', mimetype='application/json')
+    try:
+        # Ruta para el manifest
+        @app.route('/manifest.json')
+        def manifest():
+            return send_from_directory('static', 'manifest.json', mimetype='application/json')
+    except AssertionError:
+        # La ruta ya existe, no hacer nada
+        pass
     
-    # Ruta para iconos PWA
-    @app.route('/static/imagenes/pwa_icons/<path:filename>')
-    def pwa_icons(filename):
-        return send_from_directory('static/imagenes/pwa_icons', filename)
+    try:
+        # Ruta para iconos PWA
+        @app.route('/static/imagenes/pwa_icons/<path:filename>')
+        def pwa_icons(filename):
+            return send_from_directory('static/imagenes/pwa_icons', filename)
+    except AssertionError:
+        # La ruta ya existe, no hacer nada
+        pass
     
-    # Ruta para verificar estado de PWA
-    @app.route('/pwa-status')
-    def pwa_status():
-        return jsonify({
-            'status': 'active',
-            'version': '1.0.0',
-            'features': {
-                'offline': True,
-                'installable': True,
-                'notifications': True,
-                'background_sync': True
-            }
-        })
+    try:
+        # Ruta para verificar estado de PWA
+        @app.route('/pwa-status')
+        def pwa_status():
+            return jsonify({
+                'status': 'active',
+                'version': '1.0.0',
+                'features': {
+                    'offline': True,
+                    'installable': True,
+                    'notifications': True,
+                    'background_sync': True
+                }
+            })
+    except AssertionError:
+        # La ruta ya existe, no hacer nada
+        pass
     
     return app
 
