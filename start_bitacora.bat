@@ -75,8 +75,26 @@ if not exist "config_inicio.json" (
     echo [5/6] Creando acceso directo en escritorio...
     set "APP_PATH=%~dp0"
     set "APP_PATH=%APP_PATH:~0,-1%"
-    powershell -Command "& {$WshShell = New-Object -comObject WScript.Shell; $Shortcut = $WshShell.CreateShortcut('%USERPROFILE%\Desktop\Bitacora de Sala de Computacion.lnk'); $Shortcut.TargetPath = '%APP_PATH%\start_bitacora.bat'; $Shortcut.WorkingDirectory = '%APP_PATH%'; $Shortcut.Description = 'Iniciar Bitacora de Sala de Computacion'; $Shortcut.IconLocation = '%APP_PATH%\static\imagenes\logo2.ico'; $Shortcut.Save()}" >nul 2>&1
-    echo ✅ Acceso directo creado en escritorio
+    set "DESKTOP_PATH=%USERPROFILE%\Desktop"
+    set "SHORTCUT_PATH=%DESKTOP_PATH%\Bitacora de Sala de Computacion.lnk"
+    
+    REM Intentar crear acceso directo con PowerShell
+    powershell -ExecutionPolicy Bypass -File "crear_acceso_directo.ps1" -AppPath "%APP_PATH%" >nul 2>&1
+    
+    REM Si PowerShell falló, usar método alternativo
+    if not exist "%SHORTCUT_PATH%" (
+        echo Intentando metodo alternativo...
+        call crear_acceso_directo_simple.bat >nul 2>&1
+    )
+    
+    REM Verificar si se creó correctamente
+    if exist "%SHORTCUT_PATH%" (
+        echo ✅ Acceso directo creado en escritorio
+    ) else (
+        echo ⚠️  Acceso directo no se pudo crear, pero la aplicacion funcionara
+        echo    Puedes ejecutar este archivo directamente desde la carpeta
+        echo    O crear manualmente un acceso directo a: %APP_PATH%\start_bitacora.bat
+    )
 
     REM Marcar instalacion como completa
     echo [6/6] Marcando instalacion como completa...
