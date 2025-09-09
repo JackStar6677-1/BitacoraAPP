@@ -1,113 +1,121 @@
-# 📚 Bitácora de Sala de Computación
+# Bitácora de Sala de Computación
 
-Una aplicación web profesional para el registro y gestión del uso de salas de computación en instituciones educativas. Desarrollada con Flask, SQLite y autenticación Google OAuth.
+## Descripción
 
-## 🎯 Descripción
+Sistema web profesional para el registro y gestión del uso de salas de computación en instituciones educativas. Desarrollado con Flask, SQLite y autenticación Google OAuth, permite a los profesores registrar sesiones de clases, gestionar recursos utilizados y generar reportes automáticos por correo electrónico.
 
-Esta aplicación permite a los profesores y personal educativo registrar el uso de salas de computación, incluyendo detalles como curso, asignatura, objetivos, recursos utilizados y observaciones. Todo se almacena en una base de datos SQLite profesional y se pueden enviar notificaciones por correo electrónico.
+## Características Principales
 
-## ✨ Características Principales
+### Autenticación y Seguridad
+- **Autenticación Google OAuth 2.0**: Acceso seguro con cualquier cuenta de Google autorizada
+- **Sesiones seguras**: Manejo robusto de sesiones con Flask
+- **Validación de datos**: Verificación completa de todos los campos de entrada
+- **Logs detallados**: Registro completo de actividades y errores
 
-- **🔐 Autenticación Google OAuth**: Acceso seguro con cualquier cuenta de Google
-- **💾 Base de datos SQLite**: Almacenamiento robusto y escalable
-- **📧 Sistema de correos**: Notificaciones automáticas por email
-- **📊 Gestión de registros**: Visualización, búsqueda y administración completa
-- **📄 Exportación**: Generación de reportes en PDF y Word
-- **🎨 Interfaz moderna**: Diseño responsive con Bootstrap 5
-- **⚙️ Configuración incluida**: Sin necesidad de configuración adicional
-- **🚀 Instalación automática**: Un solo script hace todo
-- **🖥️ Acceso directo profesional**: Icono personalizado en el escritorio
-- **📁 Migración automática**: Se instala en Documentos del usuario
-- **🔇 Ejecución silenciosa**: Sin ventanas de consola visibles
-- **🌐 Inicio automático**: Navegador se abre automáticamente
+### Gestión de Datos
+- **Base de datos SQLite**: Almacenamiento robusto y escalable sin configuración de servidor
+- **Migración automática**: Actualización automática de esquemas de base de datos
+- **Respaldo múltiple**: Almacenamiento en SQLite, JSON y CSV
+- **Integridad de datos**: Validaciones y restricciones a nivel de aplicación
 
-## 🛠️ Tecnologías Utilizadas
+### Funcionalidades del Sistema
+- **Registro de sesiones**: Formulario intuitivo para capturar información de clases
+- **Gestión de correos**: Sistema de destinatarios predeterminados con un clic
+- **Búsqueda avanzada**: Filtros por rango de fechas y criterios múltiples
+- **Panel de administración**: Visualización completa de todos los registros
+- **Exportación de datos**: Generación de reportes en PDF y Word
+- **Sistema de correos**: Envío automático de notificaciones con documentos adjuntos
 
-- **Backend**: Python Flask
-- **Base de datos**: SQLite
-- **Autenticación**: Google OAuth 2.0 (Flask-Dance)
-- **Frontend**: HTML5, CSS3, JavaScript, Bootstrap 5
-- **Correos**: Flask-Mail
-- **PDFs**: ReportLab
-- **Iconos**: Font Awesome 6
-- **Estilos**: CSS personalizado con animaciones
+### Interfaz de Usuario
+- **Diseño responsive**: Optimizado para dispositivos móviles y escritorio
+- **Bootstrap 5**: Framework moderno para interfaz profesional
+- **Animaciones fluidas**: Transiciones y efectos visuales mejorados
+- **Iconos Font Awesome**: Iconografía consistente y profesional
+- **Tema personalizado**: Colores corporativos y diseño institucional
 
-## 📋 Funcionalidades
+## Arquitectura del Sistema
 
-### Para Usuarios
-- **Registro de uso**: Formulario intuitivo para registrar sesiones de computación
-- **Autenticación segura**: Login con cualquier cuenta de Google
-- **Correos predeterminados**: Sistema de destinatarios frecuentes con un clic
-- **Navegación fácil**: Menú desplegable con acceso a todas las funciones
-- **Validación en tiempo real**: Verificación de datos antes del envío
+### Backend
+- **Framework**: Python Flask 3.1.1
+- **Base de datos**: SQLite con migración automática
+- **Autenticación**: Flask-Dance con Google OAuth 2.0
+- **Correos**: Flask-Mail con SMTP Gmail
+- **PDFs**: ReportLab para generación de documentos
+- **Validación**: Validaciones personalizadas en Python
 
-### Para Administradores
-- **Panel de administración**: Visualización de todos los registros
-- **Búsqueda avanzada**: Filtros por rango de fechas
-- **Gestión de correos**: Administración de destinatarios predeterminados
-- **Estadísticas**: Resumen de uso con métricas importantes
-- **Exportación**: Respaldos automáticos en múltiples formatos
+### Frontend
+- **HTML5**: Estructura semántica moderna
+- **CSS3**: Estilos personalizados con variables CSS
+- **JavaScript**: Funcionalidad interactiva y validaciones del lado cliente
+- **Bootstrap 5**: Framework CSS responsive
+- **Font Awesome 6**: Iconografía profesional
 
-## 🛠️ Tecnologías Utilizadas
+### Base de Datos
 
-- **Backend**: Python Flask
-- **Base de datos**: SQLite
-- **Frontend**: HTML5, CSS3, JavaScript, Bootstrap 5
-- **Autenticación**: Google OAuth 2.0 (Flask-Dance)
-- **Correos**: Flask-Mail
-- **PDFs**: ReportLab
-- **Iconos**: Font Awesome 6
+#### Estructura de Tablas
 
-## 📦 Instalación
+**Tabla: usuarios**
+```sql
+CREATE TABLE usuarios (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    correo TEXT UNIQUE NOT NULL,
+    nombre TEXT NOT NULL,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
 
-### 🚀 Instalación Automática (Recomendada)
+**Tabla: bitacora**
+```sql
+CREATE TABLE bitacora (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    fecha TEXT NOT NULL,
+    curso TEXT NOT NULL,
+    asignatura TEXT NOT NULL,
+    objetivo TEXT NOT NULL,
+    recursos TEXT NOT NULL,
+    observaciones TEXT NOT NULL,
+    correo TEXT NOT NULL,
+    destinatario TEXT NOT NULL,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    usuario_id TEXT NOT NULL DEFAULT "usuario_ejemplo"
+);
+```
+
+#### Relaciones de Datos
+- **Relación lógica**: Un usuario puede crear múltiples registros de bitácora (1:N)
+- **Implementación**: LEFT JOIN en consultas SQL para mantener compatibilidad
+- **Integridad**: Validaciones a nivel de aplicación
+
+#### Características de la Base de Datos
+- **Sin configuración**: No requiere servidor de base de datos separado
+- **Portabilidad**: Un solo archivo contiene toda la información
+- **Robustez**: Maneja miles de registros sin problemas de rendimiento
+- **Seguridad**: Transacciones ACID y integridad de datos
+- **Escalabilidad**: Optimizado para aplicaciones web educativas
+
+## Instalación y Configuración
+
+### Requisitos del Sistema
+- Python 3.8 o superior
+- pip (gestor de paquetes de Python)
+- Navegador web moderno
+- Conexión a internet (para autenticación OAuth)
+
+### Instalación Automática (Recomendada)
 
 **Para Windows:**
 1. Descargar o clonar el proyecto
 2. Ejecutar `start_bitacora.bat` como administrador
 3. La aplicación se instalará automáticamente en Documentos
 4. Se creará un acceso directo en el escritorio con icono personalizado
-5. ¡Listo! No se requiere configuración adicional
+5. El sistema está listo para usar sin configuración adicional
 
-### 🎯 Características de la Instalación
+### Instalación Manual
 
-**✅ Migración Automática:**
-- El proyecto se copia automáticamente a `Documentos\BitacoraAPP`
-- Organización profesional en la ubicación correcta
-- No más archivos en Descargas o Escritorio
-
-**✅ Acceso Directo Profesional:**
-- Icono personalizado usando `static\imagenes\logo2.ico`
-- Nombre descriptivo: "Bitácora de Sala de Computación"
-- Ejecución silenciosa sin ventanas de consola
-
-**✅ Experiencia de Usuario:**
-- Simula una aplicación nativa de Windows
-- Navegador se abre automáticamente
-- Sin ventanas de consola visibles al usuario
-- Funciona en cualquier PC sin configuración adicional
-
-### 🌐 Aplicación Web
-
-**Características:**
-- Aplicación web profesional
-- Navegador se abre automáticamente
-- Acceso mediante navegador en http://localhost:5000
-- Configuración incluida
-- Sin necesidad de generar ejecutables
-
-### 📋 Instalación Manual
-
-#### Requisitos previos
-- Python 3.8 o superior
-- pip (gestor de paquetes de Python)
-
-#### Pasos de instalación
-
-1. **Clonar o descargar el proyecto**
+1. **Clonar el proyecto**
    ```bash
-   git clone [URL_DEL_REPOSITORIO]
-   cd bitacora-app
+   git clone https://github.com/JackStar6677-1/BitacoraAPP.git
+   cd BitacoraAPP
    ```
 
 2. **Crear entorno virtual**
@@ -132,249 +140,120 @@ Esta aplicación permite a los profesores y personal educativo registrar el uso 
    pip install -r requirements.txt
    ```
 
-5. **Configuración automática**
-   
-   La aplicación incluye configuración predeterminada. No se requiere configuración adicional.
-
-6. **Ejecutar la aplicación**
+5. **Ejecutar la aplicación**
    ```bash
    python app.py
    ```
 
-7. **Acceder a la aplicación**
+6. **Acceder a la aplicación**
    
    Abrir el navegador en: `http://localhost:5000`
 
-### 🚀 Aplicación Oficial (Ejecutable)
-
-El script `start_bitacora.bat` crea automáticamente una aplicación ejecutable independiente:
-
-**Proceso Automático:**
-1. Ejecutar `start_bitacora.bat`
-2. El script instala dependencias, crea la aplicación y la ejecuta
-3. Se genera automáticamente el ejecutable oficial
-
-**Resultado:**
-- `dist/BitacoraSala.exe` - Aplicación principal con icono
-- `Iniciar_Bitacora.bat` - Script de inicio
-- Sin ventana de consola
-- Icono personalizado
-- Ejecutable independiente
-
-### 🎯 Ventajas de la Aplicación Oficial
-
-- **Sin dependencias**: No requiere Python instalado en el sistema
-- **Icono personalizado**: Usa el logo de la institución
-- **Sin consola**: Se ejecuta en segundo plano sin ventana de comandos
-- **Portable**: Se puede copiar a cualquier computadora
-- **Profesional**: Se ve como una aplicación oficial
-- **Fácil distribución**: Un solo archivo ejecutable
-- **Inicio rápido**: Se abre directamente sin configuración
-
-### 🔧 Script de Instalación
-
-- **`start_bitacora.bat`**: Script único que instala, configura y crea la aplicación oficial automáticamente
-
-## ⚙️ Configuración
-
-### Configuración Incluida
-
-La aplicación incluye configuración predeterminada con:
-- ✅ Credenciales de Google OAuth ya configuradas
-- ✅ Configuración de Gmail ya establecida
-- ✅ Correos predeterminados ya configurados
-- ✅ Sin necesidad de configuración adicional
-
-### Personalización Opcional
-
-Si deseas personalizar la configuración:
-1. Crear un archivo `config.json` en la carpeta de la aplicación
-2. La aplicación usará tu configuración personalizada
-3. Si no existe, usará la configuración predeterminada incluida
-
-## 💾 Base de Datos SQLite
-
-### ¿Por qué SQLite?
-- **✅ Sin configuración**: No requiere servidor de base de datos
-- **✅ Portátil**: Un solo archivo contiene toda la información
-- **✅ Robusto**: Maneja miles de registros sin problemas
-- **✅ Seguro**: Transacciones ACID y integridad de datos
-- **✅ Rápido**: Optimizado para aplicaciones web
-
-### Estructura de la Tabla `bitacora`
-```sql
-CREATE TABLE bitacora (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    usuario_id TEXT NOT NULL,
-    fecha TEXT NOT NULL,
-    curso TEXT NOT NULL,
-    asignatura TEXT NOT NULL,
-    objetivo TEXT NOT NULL,
-    recursos TEXT NOT NULL,
-    observaciones TEXT NOT NULL,
-    correo TEXT NOT NULL,
-    destinatario TEXT NOT NULL,
-    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-### Características de la Base de Datos
-- **Migración automática**: Se actualiza automáticamente al agregar nuevas columnas
-- **Respaldo automático**: Se crean respaldos en JSON y CSV
-- **Integridad**: Validaciones y restricciones de datos
-- **Escalabilidad**: Maneja desde pocos hasta miles de registros
-
-## 📁 Estructura del Proyecto
-
-```
-bitacora-app/
-├── app.py                 # Aplicación principal Flask
-├── app.db               # Base de datos SQLite
-├── requirements.txt     # Dependencias de Python
-├── README.md           # Documentación
-├── start_bitacora.bat  # Script de instalación y migración
-├── limpiar_archivos.bat # Script de limpieza de archivos temporales
-├── static/             # Archivos estáticos
-│   ├── css/
-│   │   └── styles.css  # Estilos personalizados
-│   └── imagenes/
-│       ├── logo.jpg    # Logo de la aplicación
-│       └── logo2.ico   # Icono para acceso directo
-├── templates/          # Plantillas HTML
-│   ├── login.html      # Página de login
-│   ├── formulario.html # Formulario principal
-│   ├── admin.html      # Panel de administración
-│   ├── buscar.html     # Página de búsqueda
-│   └── correos.html    # Gestión de correos
-└── venv/              # Entorno virtual
-```
-
-### 📂 Estructura en Documentos (Después de la Instalación)
-
-```
-Documentos/BitacoraAPP/
-├── app.py                 # Aplicación principal
-├── iniciar_bitacora.bat   # Script de inicio silencioso
-├── static/               # Recursos estáticos
-├── templates/            # Plantillas HTML
-├── venv/                # Entorno virtual
-└── app.db               # Base de datos SQLite
-```
-
-## 🔧 Uso de la Aplicación
-
-### 1. Acceso inicial
-- Abrir la aplicación en el navegador
-- Hacer clic en "Iniciar Sesión con Google"
-- Autorizar la aplicación con una cuenta de Google autorizada
-
-### 2. Crear un registro
-- Completar el formulario con la información de la sesión
-- Especificar los destinatarios del correo
-- Hacer clic en "Guardar y Enviar"
-
-### 3. Administrar registros
-- Usar el menú desplegable para acceder a "Ver Registros"
-- Visualizar todos los registros en formato de tabla
-- Ver estadísticas de uso
-
-### 4. Buscar registros
-- Acceder a "Buscar" desde el menú
-- Seleccionar rango de fechas
-- Hacer clic en "Buscar" para filtrar resultados
-
-### 5. Gestionar correos predeterminados
-- Acceder a "Gestionar Correos" desde el menú
-- Agregar nuevos correos frecuentes
-- Eliminar correos que ya no se usen
-- Los correos aparecerán como opciones en el formulario principal
-
-## 📊 Base de Datos SQLite
-
-### ¿Por qué SQLite?
-
-La aplicación utiliza **SQLite** como base de datos principal por las siguientes ventajas:
-
-- **Sin configuración**: No requiere servidor de base de datos separado
-- **Portabilidad**: El archivo de base de datos se puede mover fácilmente
-- **Confiabilidad**: Base de datos probada y estable
-- **Rendimiento**: Excelente para aplicaciones de escritorio y web pequeñas/medianas
-- **Compatibilidad**: Funciona en cualquier sistema operativo
-- **Respaldo**: El archivo `app.db` contiene todos los datos
-
-### Estructura de la Base de Datos
-
-```sql
-CREATE TABLE bitacora (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    fecha TEXT NOT NULL,
-    curso TEXT NOT NULL,
-    asignatura TEXT NOT NULL,
-    objetivo TEXT NOT NULL,
-    recursos TEXT NOT NULL,
-    observaciones TEXT NOT NULL,
-    correo TEXT NOT NULL,
-    destinatario TEXT NOT NULL,
-    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-### Características de la Base de Datos
-
-- **ID único**: Cada registro tiene un identificador único autoincremental
-- **Timestamps**: Registro automático de fecha y hora de creación
-- **Integridad**: Validación de datos a nivel de base de datos
-- **Consultas optimizadas**: Búsquedas rápidas por fecha y otros campos
-- **Escalabilidad**: Puede manejar miles de registros eficientemente
-
-### Gestión de la Base de Datos
-
-- **Creación automática**: Se crea automáticamente al iniciar la aplicación
-- **Respaldo automático**: Se mantienen respaldos en JSON y CSV
-- **Migración**: Fácil migración de datos entre versiones
-- **Mantenimiento**: No requiere mantenimiento manual
-
-## 📧 Sistema de Correos Predeterminados
-
-### Características
-
-- **Lista actualizable**: Administra correos frecuentes desde la interfaz web
-- **Acceso rápido**: Un clic para agregar correos al formulario
-- **Persistencia**: Los correos se guardan en el archivo de configuración
-- **Validación**: Verificación automática de formato de correo
-- **Gestión visual**: Interfaz intuitiva para agregar/eliminar correos
-
-### Cómo usar
-
-1. **Acceder a gestión**: Menú → "Gestionar Correos"
-2. **Agregar correos**: Ingresar email y hacer clic en "Agregar"
-3. **Usar en formulario**: Hacer clic en cualquier correo para agregarlo
-4. **Agregar todos**: Botón "Correos Predeterminados" para agregar todos
-
 ### Configuración
 
-Los correos predeterminados se configuran en `config.json`:
+La aplicación incluye configuración predeterminada completa:
+- Credenciales de Google OAuth ya configuradas
+- Configuración de Gmail ya establecida
+- Correos predeterminados ya configurados
+- Sin necesidad de configuración adicional
 
+Para personalización opcional, crear un archivo `config.json`:
 ```json
 {
-  "DEFAULT_EMAILS": [
-    "admin@institucion.com",
-    "coordinador@institucion.com",
-    "laboratorio@institucion.com"
-  ]
+  "SECRET_KEY": "tu_clave_secreta",
+  "MAIL_SERVER": "smtp.gmail.com",
+  "MAIL_PORT": 587,
+  "MAIL_USE_TLS": true,
+  "MAIL_USERNAME": "tu_correo@gmail.com",
+  "MAIL_PASSWORD": "tu_contraseña_de_aplicacion",
+  "OAUTH_CLIENT_ID": "tu_client_id",
+  "OAUTH_CLIENT_SECRET": "tu_client_secret",
+  "AUTHORIZED_EMAILS": ["correo1@institucion.com", "correo2@institucion.com"],
+  "DEFAULT_EMAILS": ["admin@institucion.com", "coordinador@institucion.com"]
 }
 ```
 
-## 🔒 Seguridad
+## Uso de la Aplicación
 
-- **Autenticación OAuth**: Solo usuarios autorizados pueden acceder
-- **Validación de datos**: Verificación de todos los campos de entrada
-- **Manejo de errores**: Logs detallados y mensajes informativos
-- **Respaldo múltiple**: Datos almacenados en múltiples formatos
+### Flujo de Trabajo Principal
 
-## 🚀 Despliegue en Producción
+1. **Acceso inicial**
+   - Abrir la aplicación en el navegador
+   - Hacer clic en "Iniciar Sesión con Google"
+   - Autorizar la aplicación con una cuenta de Google autorizada
 
-### Usando Gunicorn
+2. **Crear un registro**
+   - Completar el formulario con la información de la sesión
+   - Especificar los destinatarios del correo
+   - Hacer clic en "Guardar y Enviar"
+
+3. **Administrar registros**
+   - Usar el menú desplegable para acceder a "Ver Registros"
+   - Visualizar todos los registros en formato de tabla
+   - Ver estadísticas de uso y métricas importantes
+
+4. **Buscar registros**
+   - Acceder a "Buscar" desde el menú
+   - Seleccionar rango de fechas
+   - Hacer clic en "Buscar" para filtrar resultados
+
+5. **Gestionar correos predeterminados**
+   - Acceder a "Gestionar Correos" desde el menú
+   - Agregar nuevos correos frecuentes
+   - Eliminar correos que ya no se usen
+
+### Funcionalidades Avanzadas
+
+#### Sistema de Correos
+- **Envío automático**: Cada registro genera un correo con PDF adjunto
+- **Formato profesional**: Mensajes estructurados con información completa
+- **Múltiples destinatarios**: Soporte para listas de correos separados por comas
+- **Documentos adjuntos**: Generación automática de PDFs con formato institucional
+
+#### Gestión de Usuarios
+- **Registro automático**: Los usuarios se crean automáticamente al iniciar sesión
+- **Historial completo**: Seguimiento de todas las actividades por usuario
+- **Sesiones seguras**: Manejo robusto de autenticación y autorización
+
+#### Exportación de Datos
+- **Múltiples formatos**: SQLite, JSON y CSV
+- **Respaldo automático**: Cada registro se guarda en los tres formatos
+- **Migración fácil**: Datos portables entre diferentes instalaciones
+
+## Estructura del Proyecto
+
+```
+BitacoraAPP/
+├── app.py                 # Aplicación principal Flask
+├── app.db                # Base de datos SQLite
+├── requirements.txt      # Dependencias de Python
+├── README.md            # Documentación principal
+├── start_bitacora.bat   # Script de instalación automática
+├── static/              # Archivos estáticos
+│   ├── css/
+│   │   └── styles.css   # Estilos personalizados
+│   └── imagenes/
+│       ├── logo.jpg     # Logo de la aplicación
+│       └── logo2.ico    # Icono para acceso directo
+├── templates/           # Plantillas HTML
+│   ├── login.html       # Página de login
+│   ├── formulario.html  # Formulario principal
+│   ├── admin.html       # Panel de administración
+│   ├── buscar.html      # Página de búsqueda
+│   └── correos.html     # Gestión de correos
+├── docs/                # Documentación técnica
+│   └── ERD/            # Modelo de base de datos
+│       ├── ERD.mmd     # Diagrama entidad-relación
+│       ├── ERD.png     # Imagen del diagrama
+│       ├── ERD.svg     # Vector del diagrama
+│       ├── schema.sqlite.ddl.sql # DDL de la base de datos
+│       └── README-ERD.md # Documentación del modelo
+└── venv/               # Entorno virtual
+```
+
+## Despliegue en Producción
+
+### Configuración de Producción
 
 1. **Instalar Gunicorn**
    ```bash
@@ -386,18 +265,47 @@ Los correos predeterminados se configuran en `config.json`:
    gunicorn -w 4 -b 0.0.0.0:8000 app:app
    ```
 
-### Variables de entorno
+### Variables de Entorno
 
 Para producción, configurar las siguientes variables:
 - `FLASK_ENV=production`
 - `SECRET_KEY=clave_secreta_muy_segura`
 - `DATABASE_URL=sqlite:///app.db`
 
-## 📝 Licencia
+### Consideraciones de Seguridad
+
+- **HTTPS obligatorio**: Usar certificado SSL válido
+- **Credenciales seguras**: Cambiar todas las credenciales predeterminadas
+- **Backup regular**: Respaldar la base de datos regularmente
+- **Monitoreo**: Implementar logs de acceso y errores
+
+## Mantenimiento y Soporte
+
+### Tareas de Mantenimiento
+
+- **Respaldos regulares**: Exportar base de datos SQLite
+- **Limpieza de logs**: Rotar archivos de log grandes
+- **Actualizaciones**: Mantener dependencias actualizadas
+- **Monitoreo**: Verificar funcionamiento del sistema de correos
+
+### Resolución de Problemas
+
+#### Problemas Comunes
+1. **Error de autenticación**: Verificar credenciales OAuth
+2. **Correos no enviados**: Verificar configuración SMTP
+3. **Base de datos corrupta**: Restaurar desde respaldo
+4. **Rendimiento lento**: Verificar índices de base de datos
+
+#### Logs y Debugging
+- **Logs de aplicación**: Revisar salida de consola
+- **Logs de base de datos**: Verificar integridad con PRAGMA
+- **Logs de correos**: Verificar configuración SMTP
+
+## Licencia
 
 Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
 
-## 🤝 Contribuciones
+## Contribuciones
 
 Las contribuciones son bienvenidas. Por favor:
 
@@ -407,29 +315,31 @@ Las contribuciones son bienvenidas. Por favor:
 4. Push a la rama (`git push origin feature/AmazingFeature`)
 5. Abrir un Pull Request
 
-## 📞 Soporte
+## Soporte Técnico
 
 Para soporte técnico o preguntas:
 - Crear un issue en el repositorio
 - Contactar al administrador del sistema
 - Revisar la documentación de Flask y las dependencias utilizadas
 
-## 🔄 Actualizaciones
+## Historial de Versiones
 
 ### Versión 2.0 - Mejoras Implementadas
-- ✅ Base de datos SQLite profesional
-- ✅ Interfaz moderna con Bootstrap 5
-- ✅ Panel de administración completo
-- ✅ Sistema de búsqueda avanzada
-- ✅ Sistema de correos predeterminados
-- ✅ Acceso sin restricciones de lista blanca
-- ✅ Validaciones robustas
-- ✅ Mejor manejo de errores
-- ✅ Diseño responsive
-- ✅ Animaciones y efectos visuales
-- ✅ Documentación completa
-- ✅ Script de instalación automática
+- Base de datos SQLite profesional
+- Interfaz moderna con Bootstrap 5
+- Panel de administración completo
+- Sistema de búsqueda avanzada
+- Sistema de correos predeterminados
+- Acceso sin restricciones de lista blanca
+- Validaciones robustas
+- Mejor manejo de errores
+- Diseño responsive
+- Animaciones y efectos visuales
+- Documentación completa
+- Script de instalación automática
 
 ---
 
-**Desarrollado con ❤️ para instituciones educativas**
+**Desarrollado para instituciones educativas**
+
+*Sistema de Bitácora de Sala de Computación - Gestión profesional del uso de recursos tecnológicos educativos*
