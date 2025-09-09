@@ -10,7 +10,7 @@ echo Creando acceso directo en escritorio...
 REM Crear archivo VBS temporal para crear el acceso directo
 echo Set WshShell = CreateObject("WScript.Shell") > temp_shortcut.vbs
 echo Set Shortcut = WshShell.CreateShortcut("%SHORTCUT_PATH%") >> temp_shortcut.vbs
-echo Shortcut.TargetPath = "%APP_PATH%\iniciar_bitacora_sin_consola.vbs" >> temp_shortcut.vbs
+echo Shortcut.TargetPath = "%APP_PATH%\iniciar_pwa_sin_consola.vbs" >> temp_shortcut.vbs
 echo Shortcut.WorkingDirectory = "%APP_PATH%" >> temp_shortcut.vbs
 echo Shortcut.Description = "Iniciar Bitacora de Sala de Computacion" >> temp_shortcut.vbs
 echo if fso.FileExists("%APP_PATH%\static\imagenes\logo2.ico") then >> temp_shortcut.vbs

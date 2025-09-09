@@ -1,13 +1,27 @@
 @echo off
-title Bitacora de Sala de Computacion
+title Verificando Servidor BitacoraAPP
 color 0A
 
 echo.
 echo ========================================
-echo   BITACORA DE SALA DE COMPUTACION
-echo   COLEGIO POLIVALENTE SAN CRISTOBAL APOSTOL
+echo   VERIFICANDO SERVIDOR BITACORAAPP
 echo ========================================
 echo.
+
+REM Verificar si el servidor ya está corriendo
+netstat -an | find "5000" | find "LISTENING" >nul
+if not errorlevel 1 (
+    echo ✅ Servidor ya está corriendo en puerto 5000
+    echo ✅ Abriendo aplicación...
+    start http://localhost:5000
+    exit /b 0
+)
+
+echo ⚠️  Servidor no está corriendo
+echo 🚀 Iniciando servidor...
+
+REM Cambiar al directorio de la aplicación
+cd /d "%~dp0"
 
 REM Verificar si es el primer inicio
 if not exist "config_inicio.json" (
@@ -71,33 +85,8 @@ if not exist "config_inicio.json" (
     )
     echo ✅ Dependencias instaladas
 
-    REM Crear acceso directo en escritorio
-    echo [5/6] Creando acceso directo en escritorio...
-    set "APP_PATH=%~dp0"
-    set "APP_PATH=%APP_PATH:~0,-1%"
-    set "DESKTOP_PATH=%USERPROFILE%\Desktop"
-    set "SHORTCUT_PATH=%DESKTOP_PATH%\Bitacora de Sala de Computacion.lnk"
-    
-    REM Intentar crear acceso directo PWA con PowerShell
-    powershell -ExecutionPolicy Bypass -File "crear_acceso_directo.ps1" -AppPath "%APP_PATH%" >nul 2>&1
-    
-    REM Si PowerShell falló, usar método alternativo
-    if not exist "%SHORTCUT_PATH%" (
-        echo Intentando metodo alternativo...
-        call crear_acceso_directo_simple.bat >nul 2>&1
-    )
-    
-    REM Verificar si se creó correctamente
-    if exist "%SHORTCUT_PATH%" (
-        echo ✅ Acceso directo creado en escritorio
-    ) else (
-        echo ⚠️  Acceso directo no se pudo crear, pero la aplicacion funcionara
-        echo    Puedes ejecutar este archivo directamente desde la carpeta
-        echo    O crear manualmente un acceso directo a: %APP_PATH%\iniciar_pwa_sin_consola.vbs
-    )
-
     REM Marcar instalacion como completa
-    echo [6/6] Marcando instalacion como completa...
+    echo [5/6] Marcando instalacion como completa...
     echo {"primer_inicio": false, "instalacion_completa": true, "fecha_instalacion": "%date%", "version": "1.0"} > config_inicio.json
     echo ✅ Instalacion completada
     
@@ -107,10 +96,7 @@ if not exist "config_inicio.json" (
     echo ========================================
     echo.
     echo ✅ Aplicacion instalada correctamente
-    echo ✅ Acceso directo creado en escritorio
-    echo ✅ Ahora puedes usar el acceso directo
-    echo.
-    echo Iniciando aplicacion...
+    echo ✅ Iniciando servidor...
     echo.
 ) else (
     echo ⚡ INICIO RAPIDO - Aplicacion ya instalada
@@ -124,31 +110,44 @@ if not exist "config_inicio.json" (
         call venv\Scripts\activate.bat
         if errorlevel 1 (
             echo ❌ Error activando entorno virtual
-            echo Ejecuta este archivo nuevamente para reinstalar
+            echo Ejecuta start_bitacora.bat para reinstalar
             pause
             exit /b 1
         )
     ) else (
         echo ❌ Entorno virtual no encontrado
-        echo Ejecuta este archivo nuevamente para reinstalar
+        echo Ejecuta start_bitacora.bat para reinstalar
         pause
         exit /b 1
     )
     
     echo ✅ Entorno virtual activado
-    echo ✅ Iniciando aplicacion...
+    echo ✅ Iniciando servidor...
     echo.
 )
 
-REM Mostrar informacion
+REM Iniciar servidor en segundo plano
 echo ========================================
-echo    INICIANDO APLICACION
+echo    INICIANDO SERVIDOR
 echo ========================================
 echo.
 echo ✅ Servidor iniciado en: http://localhost:5000
-echo ✅ Navegador se abrira automaticamente
-echo ✅ Presiona Ctrl+C para detener el servidor
+echo ✅ Abriendo aplicación...
 echo.
 
-REM Iniciar aplicacion
+REM Iniciar servidor y abrir navegador
+start /min python app.py
+
+REM Esperar un momento para que el servidor inicie
+timeout /t 3 /nobreak >nul
+
+REM Abrir navegador
+start http://localhost:5000
+
+echo ✅ Aplicación abierta correctamente
+echo.
+echo Presiona Ctrl+C para detener el servidor
+echo.
+
+REM Mantener ventana abierta para mostrar logs
 python app.py

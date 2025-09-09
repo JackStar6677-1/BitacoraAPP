@@ -10,9 +10,9 @@ try {
     
     # Crear el acceso directo
     $Shortcut = $WshShell.CreateShortcut($ShortcutPath)
-    $Shortcut.TargetPath = Join-Path $AppPath "iniciar_bitacora_sin_consola.vbs"
+    $Shortcut.TargetPath = Join-Path $AppPath "iniciar_pwa_sin_consola.vbs"
     $Shortcut.WorkingDirectory = $AppPath
-    $Shortcut.Description = "Iniciar Bitacora de Sala de Computacion - Sin Consola"
+    $Shortcut.Description = "Iniciar Bitacora de Sala de Computacion - PWA"
     
     # Verificar si existe el icono
     $IconPath = Join-Path $AppPath "static\imagenes\logo2.ico"
