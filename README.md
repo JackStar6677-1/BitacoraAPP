@@ -106,9 +106,16 @@ CREATE TABLE bitacora (
 **Para Windows:**
 1. Descargar o clonar el proyecto
 2. Ejecutar `start_bitacora.bat` como administrador
-3. La aplicación se instalará automáticamente en Documentos
-4. Se creará un acceso directo en el escritorio con icono personalizado
+3. La aplicación se instalará automáticamente con todas las dependencias
+4. Se creará un acceso directo PWA en el escritorio con icono personalizado
 5. El sistema está listo para usar sin configuración adicional
+
+**Características del Sistema de Instalación:**
+- ✅ **Instalación automática** de Python, dependencias y entorno virtual
+- ✅ **Acceso directo PWA** que ejecuta el servidor automáticamente
+- ✅ **Sin consola visible** - Todo funciona en segundo plano
+- ✅ **Navegador automático** - Se abre automáticamente
+- ✅ **PWA funcional** - Se puede instalar como aplicación del navegador
 
 ### Instalación Manual
 
@@ -149,6 +156,49 @@ CREATE TABLE bitacora (
    
    Abrir el navegador en: `http://localhost:5000`
 
+## Sistema PWA y Acceso Directo Inteligente
+
+### Progressive Web App (PWA)
+
+La aplicación incluye soporte completo para PWA, permitiendo instalarla como una aplicación nativa del navegador:
+
+#### **Características PWA:**
+- ✅ **Instalación como app** - Se puede instalar desde el navegador
+- ✅ **Manifest.json** - Configuración completa de PWA
+- ✅ **Iconos personalizados** - Logo de la institución
+- ✅ **Modo standalone** - Funciona como aplicación independiente
+- ✅ **Tema personalizado** - Colores corporativos
+
+#### **Cómo Instalar la PWA:**
+1. Ejecutar `start_bitacora.bat` para la instalación inicial
+2. Abrir la aplicación en el navegador
+3. Buscar el ícono de "Instalar aplicación" en la barra de direcciones
+4. Hacer clic en "Instalar" para agregar la PWA al escritorio
+
+### Acceso Directo Inteligente
+
+El sistema incluye un acceso directo inteligente que:
+
+#### **Funcionalidades del Acceso Directo:**
+- ✅ **Verificación automática** - Comprueba si el servidor está corriendo
+- ✅ **Inicio automático** - Ejecuta el servidor si no está activo
+- ✅ **Sin consola visible** - Todo funciona en segundo plano
+- ✅ **Navegador automático** - Se abre automáticamente
+- ✅ **Instalación completa** - Maneja primer inicio y usos posteriores
+
+#### **Flujo de Trabajo:**
+```
+Usuario → Clic en acceso directo → Verificación de servidor → 
+Si no está corriendo: Inicia servidor → Abre navegador → PWA funciona
+```
+
+#### **Archivos del Sistema:**
+- `start_bitacora.bat` - Instalación inicial y configuración
+- `iniciar_servidor_si_no_existe.bat` - Script inteligente de verificación
+- `iniciar_pwa_sin_consola.vbs` - Ejecución sin consola
+- `static/manifest.json` - Configuración PWA
+- `crear_acceso_directo.ps1` - Generación de acceso directo
+
 ### Configuración
 
 La aplicación incluye configuración predeterminada completa:
@@ -175,10 +225,25 @@ Para personalización opcional, crear un archivo `config.json`:
 
 ## Uso de la Aplicación
 
+### Instrucciones de Uso
+
+#### **Primer Uso (Instalación):**
+1. **Ejecutar instalación**: Hacer doble clic en `start_bitacora.bat`
+2. **Esperar instalación**: El sistema instalará automáticamente todas las dependencias
+3. **Acceso directo creado**: Se creará automáticamente un acceso directo en el escritorio
+4. **Aplicación abierta**: El navegador se abrirá automáticamente con la aplicación
+
+#### **Usos Posteriores:**
+1. **Opción 1 - Acceso Directo**: Hacer doble clic en "Bitacora de Sala de Computacion.lnk" del escritorio
+2. **Opción 2 - PWA**: Hacer doble clic en el acceso directo de la PWA instalada
+3. **Opción 3 - Manual**: Ejecutar `start_bitacora.bat` directamente
+
+**Nota**: El acceso directo verifica automáticamente si el servidor está corriendo y lo inicia si es necesario.
+
 ### Flujo de Trabajo Principal
 
 1. **Acceso inicial**
-- Abrir la aplicación en el navegador
+- Abrir la aplicación en el navegador (automático con acceso directo)
 - Hacer clic en "Iniciar Sesión con Google"
 - Autorizar la aplicación con una cuenta de Google autorizada
 
@@ -224,31 +289,37 @@ Para personalización opcional, crear un archivo `config.json`:
 
 ```
 BitacoraAPP/
-├── app.py                 # Aplicación principal Flask
-├── app.db                # Base de datos SQLite
-├── requirements.txt      # Dependencias de Python
-├── README.md            # Documentación principal
-├── start_bitacora.bat   # Script de instalación automática
-├── static/              # Archivos estáticos
+├── app.py                              # Aplicación principal Flask
+├── app.db                              # Base de datos SQLite
+├── requirements.txt                    # Dependencias de Python
+├── README.md                          # Documentación principal
+├── config_inicio.json                 # Configuración de primer inicio
+├── start_bitacora.bat                 # Script de instalación automática
+├── iniciar_servidor_si_no_existe.bat  # Script inteligente de verificación
+├── iniciar_pwa_sin_consola.vbs        # Ejecución PWA sin consola
+├── crear_acceso_directo.ps1           # Generación de acceso directo
+├── crear_acceso_directo_simple.bat    # Método alternativo de acceso directo
+├── static/                            # Archivos estáticos
 │   ├── css/
-│   │   └── styles.css   # Estilos personalizados
-│   └── imagenes/
-│       ├── logo.jpg     # Logo de la aplicación
-│       └── logo2.ico    # Icono para acceso directo
-├── templates/           # Plantillas HTML
-│   ├── login.html       # Página de login
-│   ├── formulario.html  # Formulario principal
-│   ├── admin.html       # Panel de administración
-│   ├── buscar.html      # Página de búsqueda
-│   └── correos.html     # Gestión de correos
-├── docs/                # Documentación técnica
-│   └── ERD/            # Modelo de base de datos
-│       ├── ERD.mmd     # Diagrama entidad-relación
-│       ├── ERD.png     # Imagen del diagrama
-│       ├── ERD.svg     # Vector del diagrama
-│       ├── schema.sqlite.ddl.sql # DDL de la base de datos
-│       └── README-ERD.md # Documentación del modelo
-└── venv/               # Entorno virtual
+│   │   └── styles.css                 # Estilos personalizados
+│   ├── imagenes/
+│   │   ├── logo.jpg                   # Logo de la aplicación
+│   │   └── logo2.ico                  # Icono para acceso directo
+│   └── manifest.json                  # Configuración PWA
+├── templates/                         # Plantillas HTML
+│   ├── login.html                     # Página de login
+│   ├── formulario.html                # Formulario principal
+│   ├── admin.html                     # Panel de administración
+│   ├── buscar.html                    # Página de búsqueda
+│   └── correos.html                   # Gestión de correos
+├── docs/                              # Documentación técnica
+│   └── ERD/                          # Modelo de base de datos
+│       ├── ERD.mmd                   # Diagrama entidad-relación
+│       ├── ERD.png                   # Imagen del diagrama
+│       ├── ERD.svg                   # Vector del diagrama
+│       ├── schema.sqlite.ddl.sql     # DDL de la base de datos
+│       └── README-ERD.md             # Documentación del modelo
+└── venv/                             # Entorno virtual
 ```
 
 ## Despliegue en Producción
@@ -323,6 +394,17 @@ Para soporte técnico o preguntas:
 - Revisar la documentación de Flask y las dependencias utilizadas
 
 ## Historial de Versiones
+
+### Versión 3.0 - Sistema PWA y Acceso Directo Inteligente
+- **Progressive Web App (PWA)** completa con manifest.json
+- **Acceso directo inteligente** que verifica y ejecuta servidor automáticamente
+- **Sistema sin consola** - Todo funciona en segundo plano
+- **Navegador automático** - Se abre automáticamente
+- **Instalación PWA** - Se puede instalar como aplicación del navegador
+- **Verificación de servidor** - Comprueba si está corriendo antes de abrir
+- **Scripts robustos** - PowerShell y VBS para máxima compatibilidad
+- **Meta tags PWA** - Configuración completa en todos los templates
+- **Iconos personalizados** - Logo de la institución en PWA
 
 ### Versión 2.0 - Mejoras Implementadas
 - Base de datos SQLite profesional
