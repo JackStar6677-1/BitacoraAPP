@@ -1038,6 +1038,14 @@ def logout():
 if __name__ == "__main__":
     init_db()  # Inicializar la base de datos
     
+    # Importar configuración PWA
+    try:
+        from pwa_config import run_pwa_server, configure_pwa
+        app = configure_pwa(app)
+        print("📱 Configuración PWA cargada exitosamente")
+    except ImportError:
+        print("⚠️  Configuración PWA no disponible")
+    
     # Abrir navegador automáticamente
     import webbrowser
     import threading
@@ -1065,12 +1073,22 @@ if __name__ == "__main__":
     browser_thread.daemon = True
     browser_thread.start()
     
-    print("=" * 50)
-    print("🚀 BITACORA DE SALA DE COMPUTACION")
-    print("=" * 50)
+    print("=" * 60)
+    print("🚀 BITACORA DE SALA DE COMPUTACION - PWA")
+    print("=" * 60)
+    print("📱 Aplicación Progressive Web App (PWA)")
+    print("✅ Instalable en móviles y escritorio")
+    print("✅ Funciona offline con Service Worker")
+    print("✅ Notificaciones push disponibles")
     print("✅ Servidor iniciado en: http://localhost:5000")
     print("✅ Navegador se abrirá automáticamente")
     print("✅ Presiona Ctrl+C para detener el servidor")
-    print("=" * 50)
+    print("=" * 60)
     
-    app.run(debug=False, host='0.0.0.0', port=5000)
+    # Intentar ejecutar con configuración PWA
+    try:
+        from pwa_config import run_pwa_server
+        run_pwa_server(app, debug=False)
+    except ImportError:
+        print("⚠️  Ejecutando en modo estándar (sin PWA)")
+        app.run(debug=False, host='0.0.0.0', port=5000)
