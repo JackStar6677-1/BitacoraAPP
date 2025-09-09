@@ -3,12 +3,25 @@ import traceback
 import json
 import csv
 import sqlite3
+import socket
+import subprocess
+import threading
+import time
 from datetime import datetime
-from flask import Flask, redirect, url_for, session, render_template, request, flash
+from flask import Flask, redirect, url_for, session, render_template, request, flash, jsonify
 from flask_dance.contrib.google import make_google_blueprint, google
 from flask_mail import Mail, Message
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+
+# Importaciones para escaneo de red
+try:
+    import psutil
+    import netifaces
+    NETWORK_SCANNING_AVAILABLE = True
+except ImportError:
+    NETWORK_SCANNING_AVAILABLE = False
+    print("⚠️  Librerías de escaneo de red no disponibles. Instala psutil y netifaces.")
 
 # Cargar configuración desde archivo JSON o usar configuración predeterminada
 def load_config():
@@ -538,6 +551,186 @@ def log_error_detallado(e):
     tb_str = traceback.format_exc()
     app.logger.error(tb_str)
 
+# ==================== FUNCIONES DE ESCANEO DE RED ====================
+
+def get_local_ip():
+    """Obtiene la IP local de la máquina"""
+    try:
+        # Conectar a una dirección externa para obtener la IP local
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        local_ip = s.getsockname()[0]
+        s.close()
+        return local_ip
+    except Exception:
+        return "127.0.0.1"
+
+def get_network_info():
+    """Obtiene información de la red local"""
+    try:
+        if not NETWORK_SCANNING_AVAILABLE:
+            return {"error": "Librerías de escaneo no disponibles"}
+        
+        local_ip = get_local_ip()
+        network_info = {
+            "local_ip": local_ip,
+            "network_range": ".".join(local_ip.split(".")[:-1]) + ".0/24",
+            "interfaces": []
+        }
+        
+        # Obtener interfaces de red
+        for interface, addrs in psutil.net_if_addrs().items():
+            for addr in addrs:
+                if addr.family == socket.AF_INET and not addr.address.startswith("127."):
+                    network_info["interfaces"].append({
+                        "name": interface,
+                        "ip": addr.address,
+                        "netmask": addr.netmask
+                    })
+        
+        return network_info
+    except Exception as e:
+        return {"error": f"Error obteniendo información de red: {str(e)}"}
+
+def ping_host(ip):
+    """Hace ping a una IP específica"""
+    try:
+        # Usar ping del sistema operativo
+        if os.name == 'nt':  # Windows
+            result = subprocess.run(['ping', '-n', '1', '-w', '1000', ip], 
+                                  capture_output=True, text=True, timeout=5)
+        else:  # Linux/Mac
+            result = subprocess.run(['ping', '-c', '1', '-W', '1', ip], 
+                                  capture_output=True, text=True, timeout=5)
+        
+        return result.returncode == 0
+    except Exception:
+        return False
+
+def get_hostname(ip):
+    """Obtiene el hostname de una IP"""
+    try:
+        hostname = socket.gethostbyaddr(ip)[0]
+        return hostname
+    except Exception:
+        return "Desconocido"
+
+def get_mac_address(ip):
+    """Obtiene la dirección MAC de una IP (requiere permisos administrativos)"""
+    try:
+        if os.name == 'nt':  # Windows
+            result = subprocess.run(['arp', '-a', ip], 
+                                  capture_output=True, text=True, timeout=5)
+            if result.returncode == 0:
+                lines = result.stdout.split('\n')
+                for line in lines:
+                    if ip in line:
+                        parts = line.split()
+                        for part in parts:
+                            if ':' in part and len(part) == 17:  # Formato MAC
+                                return part.upper()
+        else:  # Linux/Mac
+            result = subprocess.run(['arp', '-n', ip], 
+                                  capture_output=True, text=True, timeout=5)
+            if result.returncode == 0:
+                lines = result.stdout.split('\n')
+                for line in lines:
+                    if ip in line:
+                        parts = line.split()
+                        for part in parts:
+                            if ':' in part and len(part) == 17:  # Formato MAC
+                                return part.upper()
+        return "No disponible"
+    except Exception:
+        return "Error"
+
+def scan_network_range(network_range):
+    """Escanea un rango de red completo"""
+    try:
+        if not NETWORK_SCANNING_AVAILABLE:
+            return {"error": "Librerías de escaneo no disponibles"}
+        
+        # Extraer la IP base del rango
+        base_ip = ".".join(network_range.split(".")[:-1])
+        
+        devices = []
+        threads = []
+        results = {}
+        
+        def scan_ip(ip):
+            """Función para escanear una IP específica en un hilo"""
+            if ping_host(ip):
+                hostname = get_hostname(ip)
+                mac = get_mac_address(ip)
+                results[ip] = {
+                    "ip": ip,
+                    "hostname": hostname,
+                    "mac": mac,
+                    "status": "Activo",
+                    "response_time": "N/A"
+                }
+        
+        # Crear hilos para escanear cada IP
+        for i in range(1, 255):
+            ip = f"{base_ip}.{i}"
+            thread = threading.Thread(target=scan_ip, args=(ip,))
+            threads.append(thread)
+            thread.start()
+            
+            # Limitar el número de hilos simultáneos
+            if len(threads) >= 50:
+                for t in threads:
+                    t.join()
+                threads = []
+        
+        # Esperar a que terminen todos los hilos
+        for thread in threads:
+            thread.join()
+        
+        # Convertir resultados a lista
+        for ip, info in results.items():
+            devices.append(info)
+        
+        # Ordenar por IP
+        devices.sort(key=lambda x: [int(i) for i in x["ip"].split(".")])
+        
+        return {
+            "devices": devices,
+            "total_found": len(devices),
+            "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        
+    except Exception as e:
+        return {"error": f"Error escaneando red: {str(e)}"}
+
+def get_device_info(ip):
+    """Obtiene información detallada de un dispositivo específico"""
+    try:
+        info = {
+            "ip": ip,
+            "hostname": get_hostname(ip),
+            "mac": get_mac_address(ip),
+            "status": "Activo" if ping_host(ip) else "Inactivo",
+            "ports": []
+        }
+        
+        # Escanear puertos comunes
+        common_ports = [22, 23, 80, 135, 139, 443, 445, 3389, 5000]
+        for port in common_ports:
+            try:
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                sock.settimeout(1)
+                result = sock.connect_ex((ip, port))
+                if result == 0:
+                    info["ports"].append(port)
+                sock.close()
+            except Exception:
+                pass
+        
+        return info
+    except Exception as e:
+        return {"error": f"Error obteniendo información del dispositivo: {str(e)}"}
+
 def validar_datos_formulario(datos):
     """Valida los datos del formulario"""
     errores = []
@@ -1061,6 +1254,92 @@ def logout():
     response.set_cookie('google_oauth_token', '', expires=0)
     
     return response
+
+# ==================== RUTAS DE ESCANEO DE RED ====================
+
+@app.route("/network_scanner")
+def network_scanner():
+    """Página principal del escáner de red"""
+    if 'user_email' not in session:
+        app.logger.warning("Intento de acceso sin sesión válida")
+        return redirect(url_for("index"))
+    
+    try:
+        network_info = get_network_info()
+        return render_template("network_scanner.html", 
+                             correo=session['user_email'], 
+                             network_info=network_info,
+                             scanning_available=NETWORK_SCANNING_AVAILABLE)
+    except Exception as e:
+        log_error_detallado(e)
+        flash("Error al cargar el escáner de red.")
+        return redirect(url_for("formulario"))
+
+@app.route("/api/network_info")
+def api_network_info():
+    """API para obtener información de la red"""
+    if 'user_email' not in session:
+        return jsonify({"error": "No autorizado"}), 401
+    
+    try:
+        network_info = get_network_info()
+        return jsonify(network_info)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/scan_network", methods=["POST"])
+def api_scan_network():
+    """API para escanear la red"""
+    if 'user_email' not in session:
+        return jsonify({"error": "No autorizado"}), 401
+    
+    try:
+        data = request.get_json()
+        network_range = data.get('network_range', '')
+        
+        if not network_range:
+            return jsonify({"error": "Rango de red no especificado"}), 400
+        
+        # Ejecutar escaneo en un hilo separado para no bloquear la interfaz
+        def scan_thread():
+            global scan_results
+            scan_results = scan_network_range(network_range)
+        
+        # Iniciar escaneo en hilo separado
+        scan_thread_obj = threading.Thread(target=scan_thread)
+        scan_thread_obj.start()
+        
+        return jsonify({"message": "Escaneo iniciado", "status": "scanning"})
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/scan_results")
+def api_scan_results():
+    """API para obtener resultados del escaneo"""
+    if 'user_email' not in session:
+        return jsonify({"error": "No autorizado"}), 401
+    
+    try:
+        global scan_results
+        if 'scan_results' in globals():
+            return jsonify(scan_results)
+        else:
+            return jsonify({"message": "No hay resultados disponibles"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/device_info/<ip>")
+def api_device_info(ip):
+    """API para obtener información detallada de un dispositivo"""
+    if 'user_email' not in session:
+        return jsonify({"error": "No autorizado"}), 401
+    
+    try:
+        device_info = get_device_info(ip)
+        return jsonify(device_info)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":
