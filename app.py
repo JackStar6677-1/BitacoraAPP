@@ -538,37 +538,130 @@ def validar_datos_formulario(datos):
 
 
 def crear_pdf(datos, filename):
-    c = canvas.Canvas(filename, pagesize=letter)
-    width, height = letter
-    y = height - 50
+    from reportlab.lib import colors
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from reportlab.lib.units import inch
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_JUSTIFY
+    
+    # Crear documento
+    doc = SimpleDocTemplate(filename, pagesize=letter,
+                          rightMargin=72, leftMargin=72,
+                          topMargin=72, bottomMargin=18)
+    
+    # Estilos
+    styles = getSampleStyleSheet()
+    
+    # Estilo personalizado para el título
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=18,
+        spaceAfter=30,
+        alignment=TA_CENTER,
+        textColor=colors.darkblue
+    )
+    
+    # Estilo para subtítulos
+    subtitle_style = ParagraphStyle(
+        'CustomSubtitle',
+        parent=styles['Heading2'],
+        fontSize=14,
+        spaceAfter=12,
+        spaceBefore=20,
+        textColor=colors.darkblue
+    )
+    
+    # Estilo para texto normal
+    normal_style = ParagraphStyle(
+        'CustomNormal',
+        parent=styles['Normal'],
+        fontSize=11,
+        spaceAfter=8,
+        alignment=TA_JUSTIFY
+    )
+    
+    # Estilo para información de contacto
+    footer_style = ParagraphStyle(
+        'CustomFooter',
+        parent=styles['Normal'],
+        fontSize=9,
+        alignment=TA_CENTER,
+        textColor=colors.grey
+    )
+    
+    # Contenido del documento
+    story = []
+    
+    # Formatear fecha
     fecha_formato = "sin fecha"
     try:
         if datos.get("fecha"):
-            fecha_formato = datetime.strptime(datos.get("fecha"), "%Y-%m-%d").strftime("%d-%m-%Y")
+            fecha_formato = datetime.strptime(datos.get("fecha"), "%Y-%m-%d").strftime("%d de %B de %Y")
     except Exception:
         pass
-
-    titulo = f"Uso de sala de computación día {fecha_formato}"
-    c.setFont("Helvetica-Bold", 16)
-    c.drawString(50, y, titulo)
-    y -= 40
-
-    c.setFont("Helvetica", 12)
-    for campo, valor in datos.items():
-        valor_str = str(valor) if valor is not None else ""
-        try:
-            c.drawString(50, y, f"{campo.capitalize()}: {valor_str}")
-        except Exception:
-            lines = valor_str.split('\n')
-            for line in lines:
-                c.drawString(50, y, f"{campo.capitalize()}: {line}")
-                y -= 20
-        y -= 20
-        if y < 50:
-            c.showPage()
-            y = height - 50
-            c.setFont("Helvetica", 12)
-    c.save()
+    
+    # Título principal
+    titulo = f"BITÁCORA DE SALA DE COMPUTACIÓN"
+    story.append(Paragraph(titulo, title_style))
+    story.append(Spacer(1, 12))
+    
+    # Fecha
+    fecha_texto = f"Fecha: {fecha_formato}"
+    story.append(Paragraph(fecha_texto, subtitle_style))
+    story.append(Spacer(1, 20))
+    
+    # Información básica en tabla
+    info_data = [
+        ['Curso:', datos.get('curso', 'No especificado')],
+        ['Asignatura:', datos.get('asignatura', 'No especificada')],
+        ['Profesor:', datos.get('correo', 'No especificado')]
+    ]
+    
+    info_table = Table(info_data, colWidths=[1.5*inch, 4*inch])
+    info_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (0, -1), colors.lightgrey),
+        ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+        ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 0), (-1, -1), 11),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+        ('TOPPADDING', (0, 0), (-1, -1), 8),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black)
+    ]))
+    
+    story.append(info_table)
+    story.append(Spacer(1, 20))
+    
+    # Objetivo
+    story.append(Paragraph("OBJETIVO DE LA SESIÓN", subtitle_style))
+    objetivo_texto = datos.get('objetivo', 'No especificado')
+    story.append(Paragraph(objetivo_texto, normal_style))
+    story.append(Spacer(1, 15))
+    
+    # Recursos
+    story.append(Paragraph("RECURSOS UTILIZADOS", subtitle_style))
+    recursos_texto = datos.get('recursos', 'No especificados')
+    story.append(Paragraph(recursos_texto, normal_style))
+    story.append(Spacer(1, 15))
+    
+    # Observaciones
+    story.append(Paragraph("OBSERVACIONES", subtitle_style))
+    observaciones_texto = datos.get('observaciones', 'Sin observaciones')
+    story.append(Paragraph(observaciones_texto, normal_style))
+    story.append(Spacer(1, 30))
+    
+    # Pie de página
+    footer_texto = """
+    <b>Colegio Polivalente San Cristóbal Apóstol</b><br/>
+    Sistema de Bitácora de Sala de Computación<br/>
+    Documento generado automáticamente
+    """
+    story.append(Paragraph(footer_texto, footer_style))
+    
+    # Construir PDF
+    doc.build(story)
 
 
 @app.route("/")
@@ -662,10 +755,33 @@ def formulario():
             archivo_pdf = f"bitacora_{fecha_formato.replace('-', '')}.pdf"
             crear_pdf(datos, archivo_pdf)
 
-            cuerpo = "Nuevo registro de bitácora enviado por: {}\n\nDatos del registro:\n{}".format(
-                datos['correo'],
-                "\n".join(f"{k.capitalize()}: {v}" for k, v in datos.items() if k != 'destinatario')
-            )
+            # Crear mensaje profesional para el correo
+            cuerpo = f"""Estimado/a destinatario,
+
+Se hace envío de la bitácora del día {fecha_formato} para su conocimiento y registro mediante este correo automático.
+
+INFORMACIÓN DEL REGISTRO:
+• Fecha: {fecha_formato}
+• Curso: {datos.get('curso', 'No especificado')}
+• Asignatura: {datos.get('asignatura', 'No especificada')}
+• Profesor: {datos['correo']}
+
+OBJETIVO DE LA SESIÓN:
+{datos.get('objetivo', 'No especificado')}
+
+RECURSOS UTILIZADOS:
+{datos.get('recursos', 'No especificados')}
+
+OBSERVACIONES:
+{datos.get('observaciones', 'Sin observaciones')}
+
+Este documento ha sido generado automáticamente por el Sistema de Bitácora de Sala de Computación.
+
+Para consultas o aclaraciones, contactar al profesor responsable: {datos['correo']}
+
+Atentamente,
+Sistema de Bitácora de Sala de Computación
+Colegio Polivalente San Cristóbal Apóstol"""
 
             app.logger.debug(f"Cuerpo correo (raw): {repr(cuerpo)}")
 
@@ -700,7 +816,7 @@ def formulario():
             if 'archivo_pdf' in locals() and os.path.exists(archivo_pdf):
                 os.remove(archivo_pdf)
 
-        flash("🎫 ¡TICKET CREADO EXITOSAMENTE! 🎫 - Formulario guardado y correo enviado correctamente", "success")
+        flash("Registro creado exitosamente - Formulario guardado y correo enviado correctamente", "success")
         return redirect(url_for("formulario"))
 
     correos_predeterminados = get_default_emails()
