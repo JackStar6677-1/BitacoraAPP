@@ -9,6 +9,29 @@ echo   COLEGIO POLIVALENTE SAN CRISTOBAL APOSTOL
 echo ========================================
 echo.
 
+REM Verificar si estamos en carpeta del sistema
+echo %CD% | findstr /C:"System32" >nul
+if not errorlevel 1 (
+    echo.
+    echo ⚠️  ADVERTENCIA: Detectada carpeta del sistema
+    echo ⚠️  La aplicacion no funcionara correctamente aqui
+    echo.
+    echo ¿Deseas mover la aplicacion a una carpeta segura? (S/N)
+    set /p "MOVE_APP="
+    if /i "%MOVE_APP%"=="S" (
+        echo.
+        echo Ejecutando script de movimiento...
+        call mover_a_carpeta_segura.bat
+        exit /b 0
+    ) else (
+        echo.
+        echo ⚠️  Continuando en carpeta del sistema...
+        echo ⚠️  Pueden ocurrir errores de permisos
+        echo.
+        pause
+    )
+)
+
 REM Verificar si es el primer inicio
 if not exist "config_inicio.json" (
     echo 🚀 PRIMER INICIO - Instalando aplicacion...

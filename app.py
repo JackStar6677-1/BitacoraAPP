@@ -88,7 +88,26 @@ CORREOS_PREDETERMINADOS = config.get("DEFAULT_EMAILS", [
 ])
 
 # Configuración de base de datos
-DATABASE = 'app.db'
+import os
+import tempfile
+
+# Obtener directorio de la aplicación
+APP_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Verificar si estamos en una carpeta del sistema (sin permisos de escritura)
+SYSTEM_DIRS = ['C:\\Windows\\System32', 'C:\\Program Files', 'C:\\Program Files (x86)']
+IS_SYSTEM_DIR = any(APP_DIR.startswith(sys_dir) for sys_dir in SYSTEM_DIRS)
+
+if IS_SYSTEM_DIR:
+    # Si estamos en carpeta del sistema, usar carpeta de usuario
+    USER_DIR = os.path.join(os.path.expanduser('~'), 'BitacoraAPP')
+    if not os.path.exists(USER_DIR):
+        os.makedirs(USER_DIR)
+    DATABASE = os.path.join(USER_DIR, 'app.db')
+    print(f"⚠️  Detectada carpeta del sistema. Base de datos movida a: {DATABASE}")
+else:
+    # Si no estamos en carpeta del sistema, usar directorio actual
+    DATABASE = os.path.join(APP_DIR, 'app.db')
 
 def init_db():
     """Inicializa la base de datos SQLite"""
