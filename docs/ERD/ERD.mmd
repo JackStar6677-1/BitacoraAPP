@@ -1,0 +1,28 @@
+erDiagram
+    USUARIOS ||--o{ BITACORA : "crea"
+    
+    USUARIOS {
+        INTEGER id PK "Clave primaria autoincremental"
+        TEXT correo UK "Correo electrónico único del usuario"
+        TEXT nombre "Nombre del usuario"
+        TIMESTAMP fecha_creacion "Fecha de creación del usuario"
+    }
+    
+    BITACORA {
+        INTEGER id PK "Clave primaria autoincremental"
+        TEXT fecha "Fecha de la sesión (YYYY-MM-DD)"
+        TEXT curso "Curso que utilizó la sala"
+        TEXT asignatura "Asignatura impartida"
+        TEXT objetivo "Objetivo de la sesión"
+        TEXT recursos "Recursos utilizados"
+        TEXT observaciones "Observaciones de la sesión"
+        TEXT correo "Correo del profesor (duplicado para compatibilidad)"
+        TEXT destinatario "Correos destinatarios del reporte"
+        TIMESTAMP fecha_creacion "Fecha de creación del registro"
+        TEXT usuario_id FK "Referencia al usuario (debería ser INTEGER)"
+    }
+    
+    SQLITE_SEQUENCE {
+        TEXT name "Nombre de la tabla"
+        INTEGER seq "Secuencia actual"
+    }
