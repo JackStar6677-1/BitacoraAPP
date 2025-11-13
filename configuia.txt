@@ -7,7 +7,7 @@
   "MAIL_PORT": 587,                 // Puerto SMTP (587 para TLS)
   "MAIL_USE_TLS": true,             // Usar TLS para conexión segura
   "MAIL_USERNAME": "pablo.elias.miranda.292003@gmail.com",  // Correo que envia (debe ser válido) (y tener autenticacion de dos factores activa, solicitar)
-  "MAIL_PASSWORD": "jiyn qwpy soku ghfd",                  // Contraseña de aplicación generada en Gmail
+  "MAIL_PASSWORD": "ntbm nulf alpt ncuj",                  // Contraseña de aplicación generada en Gmail
 
   // Credenciales OAuth de Google para login con Google (app hecha en pablo.elias.miranda.292003@gmail.com)
   "OAUTH_CLIENT_ID": "331433147905-nt49eb3bna6mqk093qnl3essotaaa0q8.apps.googleusercontent.com",

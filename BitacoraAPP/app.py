@@ -25,7 +25,7 @@ def load_config():
             "MAIL_PORT": 587,
             "MAIL_USE_TLS": True,
             "MAIL_USERNAME": "pablo.elias.miranda.292003@gmail.com",
-            "MAIL_PASSWORD": "jiyn qwpy soku ghfd",
+            "MAIL_PASSWORD": "ntbm nulf alpt ncuj",
             "OAUTH_CLIENT_ID": "331433147905-nt49eb3bna6mqk093qnl3essotaaa0q8.apps.googleusercontent.com",
             "OAUTH_CLIENT_SECRET": "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",
             "AUTHORIZED_EMAILS": [
